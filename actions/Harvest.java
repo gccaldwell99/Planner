@@ -6,7 +6,9 @@ public class Harvest implements StripsAction {
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		// TODO Auto-generated method stub
+		// Create resource type enum
+		// Next to resource location corresponding to that type
+		// Not carrying anything
 		return false;
 	}
 

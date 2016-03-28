@@ -6,7 +6,8 @@ public class Deposit implements StripsAction {
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		// TODO Auto-generated method stub
+		// Next to base
+		// Carrying something
 		return false;
 	}
 
