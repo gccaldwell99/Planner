@@ -1,7 +1,11 @@
 package edu.cwru.sepia.agent.planner;
 
+import edu.cwru.sepia.environment.model.state.ResourceNode;
+import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.environment.model.state.State;
+import edu.cwru.sepia.environment.model.state.Unit.UnitView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,7 +26,15 @@ import java.util.List;
  * class/structure you use to represent actions.
  */
 public class GameState implements Comparable<GameState> {
-
+	List<WorkerWrapper> workers;
+	List<ResourceNodeWrapper> trees;
+	List<ResourceNodeWrapper> mines;
+	int requiredGold;
+	int requiredWood;
+	int obtainedGold;
+	int obtainedWood;
+	Position townhallLocation;
+	
     /**
      * Construct a GameState from a stateview object. This is used to construct the initial search node. All other
      * nodes should be constructed from the another constructor you create or by factory functions that you create.
@@ -34,7 +46,28 @@ public class GameState implements Comparable<GameState> {
      * @param buildPeasants True if the BuildPeasant action should be considered
      */
     public GameState(State.StateView state, int playernum, int requiredGold, int requiredWood, boolean buildPeasants) {
-        // TODO: Implement me!
+    	workers = new LinkedList<WorkerWrapper>();
+    	trees = new LinkedList<ResourceNodeWrapper>();
+    	mines = new LinkedList<ResourceNodeWrapper>();
+    	
+    	
+        for(UnitView unit : state.getUnits(playernum)) {
+        	if(unit.getTemplateView().getName().equals("Peasant"))
+        		workers.add(new WorkerWrapper(unit));
+        	if(unit.getTemplateView().getName().equals("TownHall"))
+        		townhallLocation = new Position(unit.getXPosition(), unit.getYPosition());
+        }
+        for(ResourceNode.ResourceView tree : state.getResourceNodes(ResourceNode.Type.TREE)) {
+        	trees.add(new ResourceNodeWrapper(tree));
+        }
+        for(ResourceNode.ResourceView mine : state.getResourceNodes(ResourceNode.Type.GOLD_MINE)) {
+        	mines.add(new ResourceNodeWrapper(mine));
+        }
+        this.requiredGold = requiredGold;
+        this.requiredWood = requiredWood;
+        
+        obtainedGold = state.getResourceAmount(playernum, ResourceType.GOLD);
+        obtainedWood = state.getResourceAmount(playernum, ResourceType.WOOD);
     }
 
     /**
@@ -45,8 +78,11 @@ public class GameState implements Comparable<GameState> {
      * @return true if the goal conditions are met in this instance of game state.
      */
     public boolean isGoal() {
-        // TODO: Implement me!
-        return false;
+        if(requiredGold == obtainedGold && requiredWood == obtainedWood) {
+        	return true;
+        } else {
+        	return false;
+        }
     }
 
     /**
@@ -120,5 +156,27 @@ public class GameState implements Comparable<GameState> {
     public int hashCode() {
         // TODO: Implement me!
         return 0;
+    }
+    
+    private class WorkerWrapper {
+    	Position position;
+    	boolean hasLoad;
+    	
+    	public WorkerWrapper(UnitView unit) {
+    		position = new Position(unit.getXPosition(), unit.getYPosition());
+    		hasLoad = unit.getCargoAmount() != 0;
+    	}
+    }
+    
+    private class ResourceNodeWrapper {
+    	Position position;
+    	ResourceNode.Type type;
+    	int remainingResources;
+    	
+    	public ResourceNodeWrapper(ResourceNode.ResourceView resource) {
+    		position = new Position(resource.getXPosition(), resource.getYPosition());
+    		type = resource.getType();
+    		remainingResources = resource.getAmountRemaining();
+    	}
     }
 }

@@ -13,6 +13,7 @@ public class Move implements StripsAction {
 	
 	@Override
 	public boolean preconditionsMet(GameState state) {
+		/*
 		Position destinationPosition = currentPosition.move(moveDirection); 
 		if(!destinationPosition.inBounds(__, __)) {
 			return false;
@@ -21,6 +22,9 @@ public class Move implements StripsAction {
 			return false;
 		}
 		return true;
+		*/
+		
+		return false; // should be removed later
 	}
 
 	@Override
