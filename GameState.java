@@ -1,12 +1,13 @@
 package edu.cwru.sepia.agent.planner;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.environment.model.state.State;
 import edu.cwru.sepia.environment.model.state.Unit.UnitView;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This class is used to represent the state of the game after applying one of the avaiable actions. It will also
@@ -26,9 +27,9 @@ import java.util.List;
  * class/structure you use to represent actions.
  */
 public class GameState implements Comparable<GameState> {
-	List<WorkerWrapper> workers;
-	List<ResourceNodeWrapper> trees;
-	List<ResourceNodeWrapper> mines;
+	Set<WorkerWrapper> workers;
+	Set<ResourceNodeWrapper> trees;
+	Set<ResourceNodeWrapper> mines;
 	int requiredGold;
 	int requiredWood;
 	int obtainedGold;
@@ -46,9 +47,9 @@ public class GameState implements Comparable<GameState> {
      * @param buildPeasants True if the BuildPeasant action should be considered
      */
     public GameState(State.StateView state, int playernum, int requiredGold, int requiredWood, boolean buildPeasants) {
-    	workers = new LinkedList<WorkerWrapper>();
-    	trees = new LinkedList<ResourceNodeWrapper>();
-    	mines = new LinkedList<ResourceNodeWrapper>();
+    	workers = new HashSet<WorkerWrapper>();
+    	trees = new HashSet<ResourceNodeWrapper>();
+    	mines = new HashSet<ResourceNodeWrapper>();
     	
     	
         for(UnitView unit : state.getUnits(playernum)) {
@@ -92,7 +93,8 @@ public class GameState implements Comparable<GameState> {
      * @return A list of the possible successor states and their associated actions
      */
     public List<GameState> generateChildren() {
-        // TODO: Implement me!
+        // Collect gold
+    	// Collect wood
         return null;
     }
 
@@ -142,8 +144,17 @@ public class GameState implements Comparable<GameState> {
      */
     @Override
     public boolean equals(Object o) {
-        // TODO: Implement me!
-        return false;
+    	if(!(o instanceof GameState)) {
+    		return false;
+    	}
+    	
+        GameState otherState = (GameState) o;
+        return otherState.obtainedGold == obtainedGold 
+        		&& otherState.obtainedWood == obtainedWood 
+        		&& otherState.workers == workers
+        		&& otherState.trees == trees
+        		&& otherState.mines == mines;
+       
     }
 
     /**
@@ -154,8 +165,11 @@ public class GameState implements Comparable<GameState> {
      */
     @Override
     public int hashCode() {
-        // TODO: Implement me!
-        return 0;
+        int hash = obtainedGold*31 + obtainedWood;
+        hash = hash*31+workers.hashCode();
+        hash = hash*31+trees.hashCode();
+        hash = hash*31+mines.hashCode();
+        return hash;
     }
     
     private class WorkerWrapper {
@@ -166,6 +180,25 @@ public class GameState implements Comparable<GameState> {
     		position = new Position(unit.getXPosition(), unit.getYPosition());
     		hasLoad = unit.getCargoAmount() != 0;
     	}
+    	
+        @Override
+        public boolean equals(Object o) {
+        	if(!(o instanceof WorkerWrapper)) {
+        		return false;
+        	}
+        	
+            WorkerWrapper otherWorker = (WorkerWrapper) o;
+            if(otherWorker.position.equals(position) && otherWorker.hasLoad == hasLoad) {
+            	return true;
+            } else {
+            	return false;
+            }
+        }
+    	
+        @Override
+        public int hashCode() {
+            return position.hashCode() + (hasLoad ? 1231 : 1237);
+        }
     }
     
     private class ResourceNodeWrapper {
@@ -178,5 +211,28 @@ public class GameState implements Comparable<GameState> {
     		type = resource.getType();
     		remainingResources = resource.getAmountRemaining();
     	}
+    	
+        @Override
+        public boolean equals(Object o) {
+        	if(!(o instanceof ResourceNodeWrapper)) {
+        		return false;
+        	}
+        	
+        	ResourceNodeWrapper otherResource = (ResourceNodeWrapper) o;
+            if(otherResource.position.equals(position) && otherResource.type == type 
+            		&& otherResource.remainingResources == remainingResources) {
+            	return true;
+            } else {
+            	return false;
+            }
+        }
+    	
+        @Override
+        public int hashCode() {
+            int hash = position.hashCode();
+            hash = hash + (type.equals(ResourceNode.Type.TREE) ? 1231 : 1237);
+            hash = hash*31+remainingResources;
+            return hash;
+        }
     }
 }
