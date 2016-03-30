@@ -3,6 +3,7 @@ package edu.cwru.sepia.agent.planner;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.ResourceType;
@@ -27,14 +28,16 @@ import edu.cwru.sepia.environment.model.state.Unit.UnitView;
  * class/structure you use to represent actions.
  */
 public class GameState implements Comparable<GameState> {
-	Set<WorkerWrapper> workers;
-	Set<ResourceNodeWrapper> trees;
-	Set<ResourceNodeWrapper> mines;
-	int requiredGold;
-	int requiredWood;
-	int obtainedGold;
-	int obtainedWood;
-	Position townhallLocation;
+	public Set<WorkerWrapper> workers;
+	public Set<ResourceNodeWrapper> trees;
+	public Set<ResourceNodeWrapper> mines;
+	public int xExtent;
+	public int yExtent;
+	public int requiredGold;
+	public int requiredWood;
+	public int obtainedGold;
+	public int obtainedWood;
+	public Position townhallLocation;
 	
     /**
      * Construct a GameState from a stateview object. This is used to construct the initial search node. All other
@@ -47,6 +50,9 @@ public class GameState implements Comparable<GameState> {
      * @param buildPeasants True if the BuildPeasant action should be considered
      */
     public GameState(State.StateView state, int playernum, int requiredGold, int requiredWood, boolean buildPeasants) {
+    	xExtent = state.getXExtent();
+    	yExtent = state.getYExtent();
+    	
     	workers = new HashSet<WorkerWrapper>();
     	trees = new HashSet<ResourceNodeWrapper>();
     	mines = new HashSet<ResourceNodeWrapper>();
@@ -172,9 +178,32 @@ public class GameState implements Comparable<GameState> {
         return hash;
     }
     
-    private class WorkerWrapper {
-    	Position position;
-    	boolean hasLoad;
+    public WorkerWrapper getWorker() {
+    	return workers.iterator().next();
+    }
+    
+    public boolean isOccupied(Position p) {
+    	for(WorkerWrapper worker : workers) {
+    		if(worker.position.equals(p))
+    			return true;
+    	}
+    	for(ResourceNodeWrapper tree : trees) {
+    		if(tree.position.equals(p))
+    			return true;
+    	}
+    	for(ResourceNodeWrapper mine : mines) {
+    		if(mine.position.equals(p))
+    			return true;
+    	}
+    	if(townhallLocation.equals(p))
+    		return true;
+    				
+    	return false;
+    }
+    
+    public class WorkerWrapper {
+    	public Position position;
+    	public boolean hasLoad;
     	
     	public WorkerWrapper(UnitView unit) {
     		position = new Position(unit.getXPosition(), unit.getYPosition());
@@ -201,10 +230,10 @@ public class GameState implements Comparable<GameState> {
         }
     }
     
-    private class ResourceNodeWrapper {
-    	Position position;
-    	ResourceNode.Type type;
-    	int remainingResources;
+    public class ResourceNodeWrapper {
+    	public Position position;
+    	public ResourceNode.Type type;
+    	public int remainingResources;
     	
     	public ResourceNodeWrapper(ResourceNode.ResourceView resource) {
     		position = new Position(resource.getXPosition(), resource.getYPosition());

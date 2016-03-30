@@ -13,18 +13,15 @@ public class Move implements StripsAction {
 	
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		/*
+		Position currentPosition = state.getWorker().position;
 		Position destinationPosition = currentPosition.move(moveDirection); 
-		if(!destinationPosition.inBounds(__, __)) {
+		if(!destinationPosition.inBounds(state.xExtent, state.yExtent)) {
 			return false;
 		}
 		if(state.isOccupied(destinationPosition)) {
 			return false;
 		}
 		return true;
-		*/
-		
-		return false; // should be removed later
 	}
 
 	@Override
