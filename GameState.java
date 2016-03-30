@@ -204,10 +204,14 @@ public class GameState implements Comparable<GameState> {
     public class WorkerWrapper {
     	public Position position;
     	public boolean hasLoad;
+    	public ResourceType loadType;
+    	public int id;
     	
     	public WorkerWrapper(UnitView unit) {
     		position = new Position(unit.getXPosition(), unit.getYPosition());
     		hasLoad = unit.getCargoAmount() != 0;
+    		loadType = unit.getCargoType();
+    		id = unit.getID();
     	}
     	
         @Override
