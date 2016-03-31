@@ -312,7 +312,7 @@ public class GameState implements Comparable<GameState> {
     	
         @Override
         public int hashCode() {
-            return id;
+        	return position.hashCode() + (hasLoad ? 1231 : 1237);
         }
     }
     
@@ -358,7 +358,9 @@ public class GameState implements Comparable<GameState> {
     	
         @Override
         public int hashCode() {
-            int hash = id;
+        	int hash = position.hashCode();
+        	hash = hash + (type.equals(ResourceNode.Type.TREE) ? 1231 : 1237);
+        	hash = hash*31+remainingResources;
             return hash;
         }
     }
