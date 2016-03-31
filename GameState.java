@@ -63,6 +63,7 @@ public class GameState implements Comparable<GameState> {
     	trees = new HashMap<Integer, ResourceNodeWrapper>();
     	mines = new HashMap<Integer, ResourceNodeWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
+    	actions = new Stack<StripsAction>();
     	
     	
         for(UnitView unit : state.getUnits(playernum)) {
@@ -100,6 +101,7 @@ public class GameState implements Comparable<GameState> {
     	trees = new HashMap<Integer, ResourceNodeWrapper>();
     	mines = new HashMap<Integer, ResourceNodeWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
+    	actions = new Stack<StripsAction>();
     	
     	for(WorkerWrapper worker : stateToCopy.workers.values()) {
         	workers.put(worker.id, new WorkerWrapper(worker));
