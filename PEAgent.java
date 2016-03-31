@@ -92,7 +92,7 @@ public class PEAgent extends Agent {
      */
     @Override
     public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
-        // TODO: Implement me!
+        // TODO: Implement me, Andrew!
         return null;
     }
 
@@ -102,7 +102,8 @@ public class PEAgent extends Agent {
      * @return SEPIA representation of same action
      */
     private Action createSepiaAction(StripsAction action) {
-        return null;
+        // TODO: kind of redundant
+    	return action.getSepiaAction();
     }
 
     @Override
