@@ -174,7 +174,7 @@ public class GameState implements Comparable<GameState> {
      * @return The value estimated remaining cost to reach a goal state from this state.
      */
     public double heuristic() {
-        // TODO: Implement me!
+        // TODO: Implement me, Andrew!
         return 0.0;
     }
 
@@ -186,7 +186,7 @@ public class GameState implements Comparable<GameState> {
      * @return The current cost to reach this goal
      */
     public double getCost() {
-        // TODO: Implement me!
+        // TODO: Implement me, Andrew!
         return 0.0;
     }
 
@@ -199,7 +199,7 @@ public class GameState implements Comparable<GameState> {
      */
     @Override
     public int compareTo(GameState o) {
-        // TODO: Implement me!
+        // TODO: Implement me, Andrew!
         return 0;
     }
 
