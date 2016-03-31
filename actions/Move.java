@@ -6,8 +6,8 @@ import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.agent.planner.Position;
 
 public class Move implements StripsAction {
-	Position destination;
-	WorkerWrapper worker;
+	private Position destination;
+	private WorkerWrapper worker;
 	
 	public Move(Position destination, WorkerWrapper worker) {
 		this.destination = destination;
@@ -28,6 +28,7 @@ public class Move implements StripsAction {
 		GameState newState = new GameState(state);
 		WorkerWrapper movingWorker = newState.workers.get(worker.id);
 		movingWorker.position = destination;
+		newState.actions.push(this);
 		return newState;
 	}
 	

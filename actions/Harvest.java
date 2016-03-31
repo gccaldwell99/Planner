@@ -13,8 +13,8 @@ import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.util.Direction;
 
 public class Harvest implements StripsAction {
-	ResourceNodeWrapper resourceNode;
-	WorkerWrapper worker;
+	private ResourceNodeWrapper resourceNode;
+	private WorkerWrapper worker;
 	
 	public Harvest(ResourceNodeWrapper resourceNode, WorkerWrapper worker) {
 		this.resourceNode = resourceNode;
@@ -26,7 +26,7 @@ public class Harvest implements StripsAction {
 		if(worker.hasLoad)
 			return false;
 		
-		/* 		***Use if we want to force actions only to be valid if adjacent***
+		// Check if your next to the resource your trying to harvest
 		boolean harvestLocationValid = false;
 		for(Position p : worker.position.getAdjacentPositions()) {
 			if(p.equals(resourceNode.position)) {
@@ -34,12 +34,7 @@ public class Harvest implements StripsAction {
 			}
 		}
 		
-		if(!harvestLocationValid) {
-			return false;
-		}
-		*/
-		
-		return false;
+		return harvestLocationValid;
 	}
 
 	/**
@@ -55,9 +50,11 @@ public class Harvest implements StripsAction {
 		} else if(resourceNode.type.equals(ResourceNode.Type.TREE)) {
 			harvestingWorker.loadType = ResourceType.WOOD;
 		}
-		
+	
 		// Remove the resources from the new state
 		newState.resources.get(resourceNode.id).remainingResources-=100;
+		
+		newState.actions.push(this);
 		
 		return newState;
 	}

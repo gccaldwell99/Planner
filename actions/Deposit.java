@@ -8,12 +8,10 @@ import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.util.Direction;
 
 public class Deposit implements StripsAction {
-	WorkerWrapper worker;
-	ResourceType resourceType;
-	int townhallID;
+	private WorkerWrapper worker;
+	private int townhallID;
 	
-	public Deposit(WorkerWrapper worker, ResourceType type, int townhallID) {
-		this.resourceType = type;
+	public Deposit(WorkerWrapper worker, int townhallID) {
 		this.worker = worker;
 		this.townhallID = townhallID;
 	}
@@ -23,11 +21,15 @@ public class Deposit implements StripsAction {
 		if(!worker.hasLoad)
 			return false;
 		
-		if(!worker.loadType.equals(resourceType))
-			return false;
+		// Check to see if your next to the townhall your trying to deposit to
+		boolean depositLocationValid = false;
+		for(Position p : worker.position.getAdjacentPositions()) {
+			if(p.equals(state.townhallLocation)) {
+				depositLocationValid = true;
+			}
+		}
 		
-		// If you aren't depositing to the townhall then you can't deposit
-		return false;
+		return depositLocationValid;
 	}
 
 	@Override
@@ -37,11 +39,13 @@ public class Deposit implements StripsAction {
 		
 		harvestingWorker.hasLoad = false;
 		harvestingWorker.loadType = null;
-		if(resourceType.equals(ResourceType.GOLD)) {
+		if(worker.loadType.equals(ResourceType.GOLD)) {
 			newState.obtainedGold+=100;
-		} else if(resourceType.equals(ResourceType.WOOD)) {
+		} else if(worker.loadType.equals(ResourceType.WOOD)) {
 			newState.obtainedWood+=100;
 		}
+		
+		newState.actions.push(this);
 		return newState;
 	}
 	
@@ -53,7 +57,7 @@ public class Deposit implements StripsAction {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Deposit " + resourceType.toString() + " with " + worker.toString());
+		sb.append("Deposit " + worker.loadType.toString() + " with " + worker.toString());
 		return sb.toString();
 	}
 

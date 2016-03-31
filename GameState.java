@@ -1,13 +1,12 @@
 package edu.cwru.sepia.agent.planner;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.Queue;
+import java.util.Stack;
 
-import edu.cwru.sepia.agent.planner.actions.Move;
+import edu.cwru.sepia.agent.planner.actions.*;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.environment.model.state.State;
@@ -36,6 +35,7 @@ public class GameState implements Comparable<GameState> {
 	public HashMap<Integer, ResourceNodeWrapper> trees;
 	public HashMap<Integer, ResourceNodeWrapper> mines;
 	public HashMap<Integer, ResourceNodeWrapper> resources;
+	public Stack<StripsAction> actions;
 	public int xExtent;
 	public int yExtent;
 	public int requiredGold;
@@ -116,6 +116,10 @@ public class GameState implements Comparable<GameState> {
         
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
+        
+        for(StripsAction action : stateToCopy.actions) {
+        	actions.push(action);
+        }
     }
 
     /**
@@ -145,8 +149,17 @@ public class GameState implements Comparable<GameState> {
     	for(WorkerWrapper worker : workers.values()) {
     		for(ResourceNodeWrapper resource : resources.values()) {
     			Move move = new Move(resource.position, worker);
-    			children.add(move.apply(this));
+    			if(move.preconditionsMet(this))
+    				children.add(move.apply(this));
+    			
+    			Harvest harvest = new Harvest(resource, worker);
+    			if(harvest.preconditionsMet(this))
+    				children.add(harvest.apply(this));
         	}
+    		
+    		Deposit deposit = new Deposit(worker, townhallID);
+    		if(deposit.preconditionsMet(this))
+    			children.add(deposit.apply(this));
     	}
     	
         return children;
