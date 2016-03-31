@@ -186,8 +186,7 @@ public class GameState implements Comparable<GameState> {
      * @return The current cost to reach this goal
      */
     public double getCost() {
-        // TODO: Implement me, Andrew!
-        return 0.0;
+        return actions.size();
     }
 
     /**
