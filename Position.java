@@ -184,6 +184,11 @@ public class Position {
         result = 31 * result + y;
         return result;
     }
+    
+    @Override
+    public Position clone() {
+    	return new Position(x,y);
+    }
 
     /**
      * @return human readable string representation.

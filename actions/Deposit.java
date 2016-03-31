@@ -32,14 +32,17 @@ public class Deposit implements StripsAction {
 
 	@Override
 	public GameState apply(GameState state) {
-		worker.hasLoad = false;
-		worker.loadType = null;
+		GameState newState = new GameState(state);
+		WorkerWrapper harvestingWorker = newState.workers.get(worker.id);
+		
+		harvestingWorker.hasLoad = false;
+		harvestingWorker.loadType = null;
 		if(resourceType.equals(ResourceType.GOLD)) {
-			state.obtainedGold+=100;
+			newState.obtainedGold+=100;
 		} else if(resourceType.equals(ResourceType.WOOD)) {
-			state.obtainedWood+=100;
+			newState.obtainedWood+=100;
 		}
-		return state;
+		return newState;
 	}
 	
 	@Override

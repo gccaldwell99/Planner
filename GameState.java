@@ -1,5 +1,6 @@
 package edu.cwru.sepia.agent.planner;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,11 +31,11 @@ import edu.cwru.sepia.environment.model.state.Unit.UnitView;
  * class/structure you use to represent actions.
  */
 public class GameState implements Comparable<GameState> {
-	public Set<WorkerWrapper> workers;
+	public HashMap<Integer, WorkerWrapper> workers;
 	// Figure out which version of resource storage I want to use
-	public Set<ResourceNodeWrapper> trees;
-	public Set<ResourceNodeWrapper> mines;
-	public Set<ResourceNodeWrapper> resources;
+	public HashMap<Integer, ResourceNodeWrapper> trees;
+	public HashMap<Integer, ResourceNodeWrapper> mines;
+	public HashMap<Integer, ResourceNodeWrapper> resources;
 	public int xExtent;
 	public int yExtent;
 	public int requiredGold;
@@ -58,33 +59,63 @@ public class GameState implements Comparable<GameState> {
     	xExtent = state.getXExtent();
     	yExtent = state.getYExtent();
     	
-    	workers = new HashSet<WorkerWrapper>();
-    	trees = new HashSet<ResourceNodeWrapper>();
-    	mines = new HashSet<ResourceNodeWrapper>();
+    	workers = new HashMap<Integer,WorkerWrapper>();
+    	trees = new HashMap<Integer, ResourceNodeWrapper>();
+    	mines = new HashMap<Integer, ResourceNodeWrapper>();
     	
     	
         for(UnitView unit : state.getUnits(playernum)) {
         	if(unit.getTemplateView().getName().equals("Peasant"))
-        		workers.add(new WorkerWrapper(unit));
+        		workers.put(unit.getID(), new WorkerWrapper(unit));
         	if(unit.getTemplateView().getName().equals("TownHall")) {
         		townhallLocation = new Position(unit.getXPosition(), unit.getYPosition());
         		townhallID = unit.getID();
         	}
         }
         for(ResourceNode.ResourceView tree : state.getResourceNodes(ResourceNode.Type.TREE)) {
-        	trees.add(new ResourceNodeWrapper(tree));
+        	trees.put(tree.getID(), new ResourceNodeWrapper(tree));
         }
         for(ResourceNode.ResourceView mine : state.getResourceNodes(ResourceNode.Type.GOLD_MINE)) {
-        	mines.add(new ResourceNodeWrapper(mine));
+        	mines.put(mine.getID(), new ResourceNodeWrapper(mine));
         }
         for(ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
-        	resources.add(new ResourceNodeWrapper(resource));
+        	resources.put(resource.getID(), new ResourceNodeWrapper(resource));
         }
         this.requiredGold = requiredGold;
         this.requiredWood = requiredWood;
         
         obtainedGold = state.getResourceAmount(playernum, ResourceType.GOLD);
         obtainedWood = state.getResourceAmount(playernum, ResourceType.WOOD);
+    }
+    
+    /**
+     * Makes an immutable copy of this game state
+     */
+    public GameState(GameState stateToCopy) {
+    	xExtent = stateToCopy.xExtent;
+    	yExtent = stateToCopy.yExtent;
+    	
+    	workers = new HashMap<Integer,WorkerWrapper>();
+    	trees = new HashMap<Integer, ResourceNodeWrapper>();
+    	mines = new HashMap<Integer, ResourceNodeWrapper>();
+    	
+    	for(WorkerWrapper worker : stateToCopy.workers.values()) {
+        	workers.put(worker.id, new WorkerWrapper(worker));
+        }
+        for(ResourceNodeWrapper tree : stateToCopy.trees.values()) {
+        	trees.put(tree.id, new ResourceNodeWrapper(tree));
+        }
+        for(ResourceNodeWrapper mine : stateToCopy.mines.values()) {
+        	mines.put(mine.id, new ResourceNodeWrapper(mine));
+        }
+        for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
+        	resources.put(resource.id, new ResourceNodeWrapper(resource));
+        }
+        this.requiredGold = stateToCopy.requiredGold;
+        this.requiredWood = stateToCopy.requiredWood;
+        
+        obtainedGold = stateToCopy.obtainedGold;
+        obtainedWood = stateToCopy.obtainedWood;
     }
 
     /**
@@ -111,8 +142,8 @@ public class GameState implements Comparable<GameState> {
     public List<GameState> generateChildren() {
     	List<GameState> children = new LinkedList<GameState>();
     	
-    	for(WorkerWrapper worker : workers) {
-    		for(ResourceNodeWrapper resource : resources) {
+    	for(WorkerWrapper worker : workers.values()) {
+    		for(ResourceNodeWrapper resource : resources.values()) {
     			Move move = new Move(resource.position, worker);
     			children.add(move.apply(this));
         	}
@@ -196,7 +227,7 @@ public class GameState implements Comparable<GameState> {
     }
     
     public WorkerWrapper getWorker() {
-    	return workers.iterator().next();
+    	return workers.values().iterator().next();
     }
     
     /**
@@ -205,15 +236,15 @@ public class GameState implements Comparable<GameState> {
      * @return
      */
     public boolean isOccupied(Position p) {
-    	for(WorkerWrapper worker : workers) {
+    	for(WorkerWrapper worker : workers.values()) {
     		if(worker.position.equals(p))
     			return true;
     	}
-    	for(ResourceNodeWrapper tree : trees) {
+    	for(ResourceNodeWrapper tree : trees.values()) {
     		if(tree.position.equals(p))
     			return true;
     	}
-    	for(ResourceNodeWrapper mine : mines) {
+    	for(ResourceNodeWrapper mine : mines.values()) {
     		if(mine.position.equals(p))
     			return true;
     	}
@@ -234,6 +265,17 @@ public class GameState implements Comparable<GameState> {
     		hasLoad = unit.getCargoAmount() != 0;
     		loadType = unit.getCargoType();
     		id = unit.getID();
+    	}
+    	
+    	/**
+    	 * Acts as a cloning constructor to create an immutable copy of the given worker
+    	 * @param workerToClone
+    	 */
+    	public WorkerWrapper(WorkerWrapper workerToClone) {
+    		position = workerToClone.position.clone();
+    		hasLoad = workerToClone.hasLoad;
+    		loadType = workerToClone.loadType;
+    		id = workerToClone.id;
     	}
     	
     	@Override
@@ -257,7 +299,7 @@ public class GameState implements Comparable<GameState> {
     	
         @Override
         public int hashCode() {
-            return position.hashCode() + (hasLoad ? 1231 : 1237);
+            return id;
         }
     }
     
@@ -272,6 +314,13 @@ public class GameState implements Comparable<GameState> {
     		type = resource.getType();
     		remainingResources = resource.getAmountRemaining();
     		id = resource.getID();
+    	}
+    	
+    	public ResourceNodeWrapper(ResourceNodeWrapper resourceToCopy) {
+    		position = resourceToCopy.position.clone();
+    		type = resourceToCopy.type;
+    		remainingResources = resourceToCopy.remainingResources;
+    		id = resourceToCopy.id;
     	}
     	
     	@Override
@@ -296,9 +345,7 @@ public class GameState implements Comparable<GameState> {
     	
         @Override
         public int hashCode() {
-            int hash = position.hashCode();
-            hash = hash + (type.equals(ResourceNode.Type.TREE) ? 1231 : 1237);
-            hash = hash*31+remainingResources;
+            int hash = id;
             return hash;
         }
     }

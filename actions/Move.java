@@ -24,8 +24,11 @@ public class Move implements StripsAction {
 
 	@Override
 	public GameState apply(GameState state) {
-		worker.position = destination;
-		return state;
+		// Creates a immutable copy of the state
+		GameState newState = new GameState(state);
+		WorkerWrapper movingWorker = newState.workers.get(worker.id);
+		movingWorker.position = destination;
+		return newState;
 	}
 	
 	@Override

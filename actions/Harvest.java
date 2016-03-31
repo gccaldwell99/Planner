@@ -47,14 +47,19 @@ public class Harvest implements StripsAction {
 	 */
 	@Override
 	public GameState apply(GameState state) {
-		worker.hasLoad = true;
+		GameState newState = new GameState(state);
+		WorkerWrapper harvestingWorker = newState.workers.get(worker.id);
+		harvestingWorker.hasLoad = true;
 		if(resourceNode.type.equals(ResourceNode.Type.GOLD_MINE)) {
-			worker.loadType = ResourceType.GOLD;
+			harvestingWorker.loadType = ResourceType.GOLD;
 		} else if(resourceNode.type.equals(ResourceNode.Type.TREE)) {
-			worker.loadType = ResourceType.WOOD;
+			harvestingWorker.loadType = ResourceType.WOOD;
 		}
 		
-		return state;
+		// Remove the resources from the new state
+		newState.resources.get(resourceNode.id).remainingResources-=100;
+		
+		return newState;
 	}
 	
 	@Override
