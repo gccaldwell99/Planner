@@ -197,9 +197,10 @@ public class GameState implements Comparable<GameState> {
      * @return 1 if this state costs more than the other, 0 if equal, -1 otherwise
      */
     @Override
-    public int compareTo(GameState o) {
-        // TODO: Implement me, Andrew!
-        return 0;
+    public int compareTo(GameState that) {
+        if (this.getCost() > that.getCost()) return 1;
+		if (this.getCost() < that.getCost()) return -1;
+		return 0;
     }
 
     /**
