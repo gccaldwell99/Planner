@@ -91,8 +91,45 @@ public class PlannerAgent extends Agent {
      * @return The plan or null if no plan is found.
      */
     private Stack<StripsAction> AstarSearch(GameState startState) {
-        // TODO: Implement me!
-        return null;
+    	Set<GameState> visitedStates = new HashSet<GameState>();
+
+    	UpdatingHeap<GameState> frontier = new UpdatingHeap<GameState>();
+    	float startingValue = (float) (startState.getCost() + startState.heuristic());
+    	frontier.add(startState, startingValue);
+
+    	GameState currentState;
+    	do {
+    		currentState = frontier.poll();
+    		visitedStates.add(currentState);
+    		for (GameState child : currentState.generateChildren()) {
+    			if (visitedStates.contains(child)) {
+    				continue;
+    			}
+    			float value = (float) (child.getCost() + child.heuristic());
+    			if (frontier.contains(child)) {
+    				frontier.updateIfLess(child, value);
+    			} else { // TODO: ? if { 
+    				frontier.add(child, value);
+    			}
+    		}
+    	} while(!frontier.isEmpty() && !currentState.isGoal());
+
+    	if(!currentState.isGoal()) {
+    		System.out.println("No solution available");
+    		System.exit(0);
+    	}
+
+    	Stack<StripsAction> path = reverseStack(currentState.actions);
+    	return path;
+    }
+    
+    // Given a StripsAction Stack, returns a reversed copy
+    private Stack<StripsAction> reverseStack(Stack<StripsAction> stack) {
+    	Stack<StripsAction> reversed = new Stack<StripsAction>();
+    	while (!stack.isEmpty()) {
+    		reversed.push(stack.pop());
+    	}
+    	return reversed;
     }
 
     /**
