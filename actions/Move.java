@@ -1,24 +1,22 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
+import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.agent.planner.Position;
-import edu.cwru.sepia.util.Direction;
 
 public class Move implements StripsAction {
-	Direction moveDirection;
+	Position destination;
+	WorkerWrapper worker;
 	
-	public Move(Direction moveDirection) {
-		this.moveDirection = moveDirection;
+	public Move(Position destination, WorkerWrapper worker) {
+		this.destination = destination;
+		this.worker = worker;
 	}
 	
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		Position currentPosition = state.getWorker().position;
-		Position destinationPosition = currentPosition.move(moveDirection); 
-		if(!destinationPosition.inBounds(state.xExtent, state.yExtent)) {
-			return false;
-		}
-		if(state.isOccupied(destinationPosition)) {
+		if(!destination.inBounds(state.xExtent, state.yExtent)) {
 			return false;
 		}
 		return true;
@@ -26,13 +24,19 @@ public class Move implements StripsAction {
 
 	@Override
 	public GameState apply(GameState state) {
-		// TODO Auto-generated method stub
-		return null;
+		worker.position = destination;
+		return state;
+	}
+	
+	@Override
+	public Action getSepiaAction() {
+		return Action.createCompoundMove(worker.id, destination.x, destination.y);
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder sb = new StringBuilder();
+		sb.append("Move " + "worker-" + worker.id + " to " + destination.toString());
+		return sb.toString();
 	}
 }

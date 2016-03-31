@@ -1,17 +1,21 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.agent.planner.Position;
 import edu.cwru.sepia.environment.model.state.ResourceType;
+import edu.cwru.sepia.util.Direction;
 
 public class Deposit implements StripsAction {
 	WorkerWrapper worker;
 	ResourceType resourceType;
+	Direction depositDirection;
 	
-	public Deposit(WorkerWrapper worker, ResourceType type) {
+	public Deposit(WorkerWrapper worker, ResourceType type, Direction depositDirection) {
 		this.resourceType = type;
 		this.worker = worker;
+		this.depositDirection = depositDirection;
 	}
 
 	@Override
@@ -22,14 +26,13 @@ public class Deposit implements StripsAction {
 		if(!worker.loadType.equals(resourceType))
 			return false;
 					
-		// Find if the townhall is next to you
-		for(Position p : worker.position.getAdjacentPositions()) {
-			if(state.townhallLocation.equals(p)) {
-				return true;
-			}
+		// Find if you are depositing resources to the townhall
+		Position depositPosition = worker.position.move(depositDirection);
+		if(state.townhallLocation.equals(depositPosition)) {
+			return true;
 		}
 		
-		// If you aren't next to the townhall you can't deposit
+		// If you aren't depositing to the townhall then you can't deposit
 		return false;
 	}
 
@@ -43,6 +46,11 @@ public class Deposit implements StripsAction {
 			state.obtainedWood+=100;
 		}
 		return state;
+	}
+	
+	@Override
+	public Action getSepiaAction() {
+		return Action.createPrimitiveDeposit(worker.id, depositDirection);
 	}
 	
 	@Override

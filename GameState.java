@@ -182,6 +182,11 @@ public class GameState implements Comparable<GameState> {
     	return workers.iterator().next();
     }
     
+    /**
+     * Used to check for occupied positions. Currently unused.
+     * @param p
+     * @return
+     */
     public boolean isOccupied(Position p) {
     	for(WorkerWrapper worker : workers) {
     		if(worker.position.equals(p))

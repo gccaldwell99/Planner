@@ -3,20 +3,22 @@ package edu.cwru.sepia.agent.planner.actions;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.GameState.ResourceNodeWrapper;
 import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.agent.planner.Position;
 import edu.cwru.sepia.environment.model.state.ResourceType;
+import edu.cwru.sepia.util.Direction;
 
 public class Harvest implements StripsAction {
-	Position harvestLocation;
+	Direction harvestDirection;
 	ResourceType resourceType;
 	WorkerWrapper worker;
 	
-	public Harvest(ResourceType type, Position p, WorkerWrapper worker) {
+	public Harvest(ResourceType type, Direction harvestDirection, WorkerWrapper worker) {
 		type = resourceType;
-		harvestLocation = p;
+		this.harvestDirection = harvestDirection;
 		this.worker = worker;
 	}
 
@@ -24,6 +26,8 @@ public class Harvest implements StripsAction {
 	public boolean preconditionsMet(GameState state) {
 		if(worker.hasLoad)
 			return false;
+		
+		Position harvestLocation = worker.position.move(harvestDirection);
 		
 		// Ensure that the worker is next to the harvest location
 		boolean harvestLocationValid = false;
@@ -62,6 +66,11 @@ public class Harvest implements StripsAction {
 		worker.hasLoad = true;
 		worker.loadType = resourceType;
 		return state;
+	}
+	
+	@Override
+	public Action getSepiaAction() {
+		return Action.createPrimitiveGather(worker.id, harvestDirection);
 	}
 
 	@Override
