@@ -38,6 +38,7 @@ public class GameState implements Comparable<GameState> {
 	public int obtainedGold;
 	public int obtainedWood;
 	public Position townhallLocation;
+	public int townhallID;
 	
     /**
      * Construct a GameState from a stateview object. This is used to construct the initial search node. All other
@@ -61,8 +62,10 @@ public class GameState implements Comparable<GameState> {
         for(UnitView unit : state.getUnits(playernum)) {
         	if(unit.getTemplateView().getName().equals("Peasant"))
         		workers.add(new WorkerWrapper(unit));
-        	if(unit.getTemplateView().getName().equals("TownHall"))
+        	if(unit.getTemplateView().getName().equals("TownHall")) {
         		townhallLocation = new Position(unit.getXPosition(), unit.getYPosition());
+        		townhallID = unit.getID();
+        	}
         }
         for(ResourceNode.ResourceView tree : state.getResourceNodes(ResourceNode.Type.TREE)) {
         	trees.add(new ResourceNodeWrapper(tree));
@@ -219,6 +222,11 @@ public class GameState implements Comparable<GameState> {
     		id = unit.getID();
     	}
     	
+    	@Override
+    	public String toString() {
+    		return "worker-" + id;
+    	}
+    	
         @Override
         public boolean equals(Object o) {
         	if(!(o instanceof WorkerWrapper)) {
@@ -243,11 +251,18 @@ public class GameState implements Comparable<GameState> {
     	public Position position;
     	public ResourceNode.Type type;
     	public int remainingResources;
+    	public int id;
     	
     	public ResourceNodeWrapper(ResourceNode.ResourceView resource) {
     		position = new Position(resource.getXPosition(), resource.getYPosition());
     		type = resource.getType();
     		remainingResources = resource.getAmountRemaining();
+    		id = resource.getID();
+    	}
+    	
+    	@Override
+    	public String toString() {
+    		return type.toString() + "-" + id;
     	}
     	
         @Override

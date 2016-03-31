@@ -10,12 +10,12 @@ import edu.cwru.sepia.util.Direction;
 public class Deposit implements StripsAction {
 	WorkerWrapper worker;
 	ResourceType resourceType;
-	Direction depositDirection;
+	int townhallID;
 	
-	public Deposit(WorkerWrapper worker, ResourceType type, Direction depositDirection) {
+	public Deposit(WorkerWrapper worker, ResourceType type, int townhallID) {
 		this.resourceType = type;
 		this.worker = worker;
-		this.depositDirection = depositDirection;
+		this.townhallID = townhallID;
 	}
 
 	@Override
@@ -25,12 +25,6 @@ public class Deposit implements StripsAction {
 		
 		if(!worker.loadType.equals(resourceType))
 			return false;
-					
-		// Find if you are depositing resources to the townhall
-		Position depositPosition = worker.position.move(depositDirection);
-		if(state.townhallLocation.equals(depositPosition)) {
-			return true;
-		}
 		
 		// If you aren't depositing to the townhall then you can't deposit
 		return false;
@@ -50,13 +44,13 @@ public class Deposit implements StripsAction {
 	
 	@Override
 	public Action getSepiaAction() {
-		return Action.createPrimitiveDeposit(worker.id, depositDirection);
+		return Action.createCompoundDeposit(worker.id, townhallID);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Deposit " + resourceType.toString() + " with worker-" + worker.id);
+		sb.append("Deposit " + resourceType.toString() + " with " + worker.toString());
 		return sb.toString();
 	}
 

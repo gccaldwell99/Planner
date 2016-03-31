@@ -8,17 +8,16 @@ import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.GameState.ResourceNodeWrapper;
 import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.agent.planner.Position;
+import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.util.Direction;
 
 public class Harvest implements StripsAction {
-	Direction harvestDirection;
-	ResourceType resourceType;
+	ResourceNodeWrapper resourceNode;
 	WorkerWrapper worker;
 	
-	public Harvest(ResourceType type, Direction harvestDirection, WorkerWrapper worker) {
-		type = resourceType;
-		this.harvestDirection = harvestDirection;
+	public Harvest(ResourceNodeWrapper resourceNode, WorkerWrapper worker) {
+		this.resourceNode = resourceNode;
 		this.worker = worker;
 	}
 
@@ -27,33 +26,18 @@ public class Harvest implements StripsAction {
 		if(worker.hasLoad)
 			return false;
 		
-		Position harvestLocation = worker.position.move(harvestDirection);
-		
-		// Ensure that the worker is next to the harvest location
+		/* 		***Use if we want to force actions only to be valid if adjacent***
 		boolean harvestLocationValid = false;
 		for(Position p : worker.position.getAdjacentPositions()) {
-			if(p.equals(harvestLocation)) {
+			if(p.equals(resourceNode.position)) {
 				harvestLocationValid = true;
 			}
 		}
+		
 		if(!harvestLocationValid) {
 			return false;
 		}
-		
-		// Ensure there is a resource node at the harvest location
-		if(resourceType==ResourceType.GOLD) {
-			for(ResourceNodeWrapper mine : state.mines) {
-				if(mine.position.equals(harvestLocation) && mine.remainingResources>0) {
-					return true;
-				}
-			}
-		} else if(resourceType==ResourceType.WOOD) {
-			for(ResourceNodeWrapper tree : state.trees) {
-				if(tree.position.equals(harvestLocation) && tree.remainingResources>0) {
-					return true;
-				}
-			}
-		}
+		*/
 		
 		return false;
 	}
@@ -64,19 +48,24 @@ public class Harvest implements StripsAction {
 	@Override
 	public GameState apply(GameState state) {
 		worker.hasLoad = true;
-		worker.loadType = resourceType;
+		if(resourceNode.type.equals(ResourceNode.Type.GOLD_MINE)) {
+			worker.loadType = ResourceType.GOLD;
+		} else if(resourceNode.type.equals(ResourceNode.Type.TREE)) {
+			worker.loadType = ResourceType.WOOD;
+		}
+		
 		return state;
 	}
 	
 	@Override
 	public Action getSepiaAction() {
-		return Action.createPrimitiveGather(worker.id, harvestDirection);
+		return Action.createCompoundGather(worker.id, resourceNode.id);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Harvest " + resourceType.toString() + " with worker-" + worker.id);
+		sb.append("Harvest from " + resourceNode.toString() + " with " + worker.toString());
 		return sb.toString();
 	}
 }
