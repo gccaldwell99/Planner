@@ -1,10 +1,12 @@
 package edu.cwru.sepia.agent.planner;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import edu.cwru.sepia.agent.planner.actions.Move;
 import edu.cwru.sepia.environment.model.state.ResourceNode;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 import edu.cwru.sepia.environment.model.state.State;
@@ -29,8 +31,10 @@ import edu.cwru.sepia.environment.model.state.Unit.UnitView;
  */
 public class GameState implements Comparable<GameState> {
 	public Set<WorkerWrapper> workers;
+	// Figure out which version of resource storage I want to use
 	public Set<ResourceNodeWrapper> trees;
 	public Set<ResourceNodeWrapper> mines;
+	public Set<ResourceNodeWrapper> resources;
 	public int xExtent;
 	public int yExtent;
 	public int requiredGold;
@@ -73,6 +77,9 @@ public class GameState implements Comparable<GameState> {
         for(ResourceNode.ResourceView mine : state.getResourceNodes(ResourceNode.Type.GOLD_MINE)) {
         	mines.add(new ResourceNodeWrapper(mine));
         }
+        for(ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
+        	resources.add(new ResourceNodeWrapper(resource));
+        }
         this.requiredGold = requiredGold;
         this.requiredWood = requiredWood;
         
@@ -102,9 +109,16 @@ public class GameState implements Comparable<GameState> {
      * @return A list of the possible successor states and their associated actions
      */
     public List<GameState> generateChildren() {
-        // Collect gold
-    	// Collect wood
-        return null;
+    	List<GameState> children = new LinkedList<GameState>();
+    	
+    	for(WorkerWrapper worker : workers) {
+    		for(ResourceNodeWrapper resource : resources) {
+    			Move move = new Move(resource.position, worker);
+    			children.add(move.apply(this));
+        	}
+    	}
+    	
+        return children;
     }
 
     /**
