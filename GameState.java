@@ -31,9 +31,6 @@ import edu.cwru.sepia.environment.model.state.Unit.UnitView;
  */
 public class GameState implements Comparable<GameState> {
 	public HashMap<Integer, WorkerWrapper> workers;
-	// Figure out which version of resource storage I want to use
-	public HashMap<Integer, ResourceNodeWrapper> trees;
-	public HashMap<Integer, ResourceNodeWrapper> mines;
 	public HashMap<Integer, ResourceNodeWrapper> resources;
 	public Stack<StripsAction> actions;
 	public int xExtent;
@@ -60,8 +57,6 @@ public class GameState implements Comparable<GameState> {
     	yExtent = state.getYExtent();
     	
     	workers = new HashMap<Integer,WorkerWrapper>();
-    	trees = new HashMap<Integer, ResourceNodeWrapper>();
-    	mines = new HashMap<Integer, ResourceNodeWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
     	actions = new Stack<StripsAction>();
     	
@@ -73,12 +68,6 @@ public class GameState implements Comparable<GameState> {
         		townhallLocation = new Position(unit.getXPosition(), unit.getYPosition());
         		townhallID = unit.getID();
         	}
-        }
-        for(ResourceNode.ResourceView tree : state.getResourceNodes(ResourceNode.Type.TREE)) {
-        	trees.put(tree.getID(), new ResourceNodeWrapper(tree));
-        }
-        for(ResourceNode.ResourceView mine : state.getResourceNodes(ResourceNode.Type.GOLD_MINE)) {
-        	mines.put(mine.getID(), new ResourceNodeWrapper(mine));
         }
         for(ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
         	resources.put(resource.getID(), new ResourceNodeWrapper(resource));
@@ -98,19 +87,11 @@ public class GameState implements Comparable<GameState> {
     	yExtent = stateToCopy.yExtent;
     	
     	workers = new HashMap<Integer,WorkerWrapper>();
-    	trees = new HashMap<Integer, ResourceNodeWrapper>();
-    	mines = new HashMap<Integer, ResourceNodeWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
     	actions = new Stack<StripsAction>();
     	
     	for(WorkerWrapper worker : stateToCopy.workers.values()) {
         	workers.put(worker.id, new WorkerWrapper(worker));
-        }
-        for(ResourceNodeWrapper tree : stateToCopy.trees.values()) {
-        	trees.put(tree.id, new ResourceNodeWrapper(tree));
-        }
-        for(ResourceNodeWrapper mine : stateToCopy.mines.values()) {
-        	mines.put(mine.id, new ResourceNodeWrapper(mine));
         }
         for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
         	resources.put(resource.id, new ResourceNodeWrapper(resource));
@@ -294,10 +275,8 @@ public class GameState implements Comparable<GameState> {
         GameState otherState = (GameState) o;
         return otherState.obtainedGold == obtainedGold 
         		&& otherState.obtainedWood == obtainedWood 
-        		&& otherState.workers == workers
-        		&& otherState.trees == trees
-        		&& otherState.mines == mines;
-       
+        		&& otherState.workers.equals(workers)
+        		&& otherState.resources.equals(resources);
     }
 
     /**
@@ -310,8 +289,7 @@ public class GameState implements Comparable<GameState> {
     public int hashCode() {
         int hash = obtainedGold*31 + obtainedWood;
         hash = hash*31+workers.hashCode();
-        hash = hash*31+trees.hashCode();
-        hash = hash*31+mines.hashCode();
+        hash = hash*31+resources.hashCode();
         return hash;
     }
     
@@ -319,29 +297,6 @@ public class GameState implements Comparable<GameState> {
     	return workers.values().iterator().next();
     }
     
-    /**
-     * Used to check for occupied positions. Currently unused.
-     * @param p
-     * @return
-     */
-    public boolean isOccupied(Position p) {
-    	for(WorkerWrapper worker : workers.values()) {
-    		if(worker.position.equals(p))
-    			return true;
-    	}
-    	for(ResourceNodeWrapper tree : trees.values()) {
-    		if(tree.position.equals(p))
-    			return true;
-    	}
-    	for(ResourceNodeWrapper mine : mines.values()) {
-    		if(mine.position.equals(p))
-    			return true;
-    	}
-    	if(townhallLocation.equals(p))
-    		return true;
-    				
-    	return false;
-    }
     
     public class WorkerWrapper {
     	public Position position;
