@@ -22,14 +22,7 @@ public class Deposit implements StripsAction {
 			return false;
 		
 		// Check to see if your next to the townhall your trying to deposit to
-		boolean depositLocationValid = false;
-		for(Position p : worker.position.getAdjacentPositions()) {
-			if(p.equals(state.townhallLocation)) {
-				depositLocationValid = true;
-			}
-		}
-		
-		return depositLocationValid;
+		return worker.position.equals(state.townhallLocation);
 	}
 
 	@Override

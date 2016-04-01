@@ -3,6 +3,7 @@ package edu.cwru.sepia.agent.planner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -32,6 +33,8 @@ import edu.cwru.sepia.environment.model.state.Unit.UnitView;
 public class GameState implements Comparable<GameState> {
 	public HashMap<Integer, WorkerWrapper> workers;
 	public HashMap<Integer, ResourceNodeWrapper> resources;
+	public PriorityQueue<ResourceNodeWrapper> closestTree;
+	public PriorityQueue<ResourceNodeWrapper> closestGoldMine;
 	public Stack<StripsAction> actions;
 	public int xExtent;
 	public int yExtent;
@@ -71,6 +74,12 @@ public class GameState implements Comparable<GameState> {
         }
         for(ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
         	resources.put(resource.getID(), new ResourceNodeWrapper(resource));
+        	
+        	if(resource.getType().equals(ResourceNode.Type.GOLD_MINE)) {
+        		closestGoldMine.add(new ResourceNodeWrapper(resource));
+        	} else if(resource.getType().equals(ResourceNode.Type.TREE)) {
+        		closestTree.add(new ResourceNodeWrapper(resource));
+        	}
         }
         this.requiredGold = requiredGold;
         this.requiredWood = requiredWood;
@@ -95,6 +104,12 @@ public class GameState implements Comparable<GameState> {
         }
         for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
         	resources.put(resource.id, new ResourceNodeWrapper(resource));
+        }
+        for(ResourceNodeWrapper tree : stateToCopy.closestTree) {
+        	closestTree.add(new ResourceNodeWrapper(tree));
+        }
+        for(ResourceNodeWrapper mine : stateToCopy.closestGoldMine) {
+        	closestGoldMine.add(new ResourceNodeWrapper(mine));
         }
         this.requiredGold = stateToCopy.requiredGold;
         this.requiredWood = stateToCopy.requiredWood;
@@ -135,15 +150,26 @@ public class GameState implements Comparable<GameState> {
     	List<GameState> children = new LinkedList<GameState>();
     	
     	for(WorkerWrapper worker : workers.values()) {
-    		for(ResourceNodeWrapper resource : resources.values()) {
-    			Move move = new Move(resource.position, worker);
-    			if(move.preconditionsMet(this))
-    				children.add(move.apply(this));
-    			
-    			Harvest harvest = new Harvest(resource, worker);
-    			if(harvest.preconditionsMet(this))
-    				children.add(harvest.apply(this));
-        	}
+    		Move moveToMine = new Move(closestGoldMine.peek().position, worker);
+    		if(moveToMine.preconditionsMet(this))
+				children.add(moveToMine.apply(this));
+    		
+    		Move moveToTree = new Move(closestTree.peek().position, worker);
+    		if(moveToTree.preconditionsMet(this))
+				children.add(moveToTree.apply(this));
+
+    		Move moveToTownHall = new Move(townhallLocation, worker);
+    		if(moveToTownHall.preconditionsMet(this))
+				children.add(moveToTownHall.apply(this));
+    		
+    		// Have to deal with multiple workers harvesting from an almost empty resource
+    		Harvest harvestGold = new Harvest(closestGoldMine.peek(), worker);
+    		if(harvestGold.preconditionsMet(this))
+    			children.add(harvestGold.apply(this));
+    		
+    		Harvest harvestWood = new Harvest(closestGoldMine.peek(), worker);
+    		if(harvestWood.preconditionsMet(this))
+    			children.add(harvestWood.apply(this));
     		
     		Deposit deposit = new Deposit(worker, townhallID);
     		if(deposit.preconditionsMet(this))
@@ -293,6 +319,11 @@ public class GameState implements Comparable<GameState> {
         return hash;
     }
     
+    @Override
+    public String toString() {
+    	return actions.toString();
+    }
+    
     public WorkerWrapper getWorker() {
     	return workers.values().iterator().next();
     }
@@ -347,7 +378,7 @@ public class GameState implements Comparable<GameState> {
         }
     }
     
-    public class ResourceNodeWrapper {
+    public class ResourceNodeWrapper implements Comparable<ResourceNodeWrapper> {
     	public Position position;
     	public ResourceNode.Type type;
     	public int remainingResources;
@@ -366,6 +397,11 @@ public class GameState implements Comparable<GameState> {
     		remainingResources = resourceToCopy.remainingResources;
     		id = resourceToCopy.id;
     	}
+    	
+		@Override
+		public int compareTo(ResourceNodeWrapper otherNode) {
+			return (int) (position.euclideanDistance(townhallLocation)-otherNode.position.euclideanDistance(townhallLocation));
+		}
     	
     	@Override
     	public String toString() {

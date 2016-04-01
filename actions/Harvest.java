@@ -30,14 +30,8 @@ public class Harvest implements StripsAction {
 			return false;
 		
 		// Check if your next to the resource your trying to harvest
-		boolean harvestLocationValid = false;
-		for(Position p : worker.position.getAdjacentPositions()) {
-			if(p.equals(resourceNode.position)) {
-				harvestLocationValid = true;
-			}
-		}
+		return worker.position.equals(resourceNode.position);
 		
-		return harvestLocationValid;
 	}
 
 	/**
@@ -54,8 +48,14 @@ public class Harvest implements StripsAction {
 			harvestingWorker.loadType = ResourceType.WOOD;
 		}
 	
-		// Remove the resources from the new state
+		// Remove the resources from the new state, then take it out of the priority queue if it is empty
 		newState.resources.get(resourceNode.id).remainingResources-=100;
+		if(newState.closestTree.peek().remainingResources<=0) {
+			newState.closestTree.remove();
+		}
+		if(newState.closestGoldMine.peek().remainingResources<=0) {
+			newState.closestGoldMine.remove();
+		}
 		
 		newState.actions.push(this);
 		
