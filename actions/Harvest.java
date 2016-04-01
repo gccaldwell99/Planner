@@ -26,6 +26,9 @@ public class Harvest implements StripsAction {
 		if(worker.hasLoad)
 			return false;
 		
+		if(resourceNode.remainingResources<=0)
+			return false;
+		
 		// Check if your next to the resource your trying to harvest
 		boolean harvestLocationValid = false;
 		for(Position p : worker.position.getAdjacentPositions()) {

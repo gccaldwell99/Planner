@@ -121,6 +121,9 @@ public class GameState implements Comparable<GameState> {
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
         
+        townhallLocation = stateToCopy.townhallLocation;
+        townhallID = stateToCopy.townhallID;
+        
         for(StripsAction action : stateToCopy.actions) {
         	actions.push(action);
         }
@@ -178,8 +181,77 @@ public class GameState implements Comparable<GameState> {
      * @return The value estimated remaining cost to reach a goal state from this state.
      */
     public double heuristic() {
-        // TODO: Implement me, Andrew!
-        return 0.0;
+    	double closestTreeDistance = Double.MAX_VALUE;
+    	double closestMineDistance = Double.MAX_VALUE;
+    	
+    	for(ResourceNodeWrapper resource : resources.values()) {
+    		if(resource.type.equals(ResourceNode.Type.GOLD_MINE)) {
+    			closestMineDistance = Math.min(closestMineDistance, resource.position.euclideanDistance(townhallLocation));
+    		} else if(resource.type.equals(ResourceNode.Type.GOLD_MINE)) {
+    			closestTreeDistance = Math.min(closestTreeDistance, resource.position.euclideanDistance(townhallLocation));
+    		}
+    	}
+    	
+    	int woodNeeded = requiredWood-obtainedWood;
+    	int goldNeeded = requiredGold-obtainedGold;
+    	double heuristicCost = 2*closestTreeDistance*(woodNeeded/100)+2*closestMineDistance*(goldNeeded/100);
+    	
+    	// Reduced heuristic cost based on favorable worker positions
+    	for(WorkerWrapper worker : workers.values()) {
+    		heuristicCost-=calculateWorkerValue(worker, closestTreeDistance, closestMineDistance);
+    	}
+        
+        return heuristicCost;
+    }
+    
+    private double calculateWorkerValue(WorkerWrapper worker, double closestTreeDistance, double closestMineDistance) {
+    	double workerValue = 0;
+    	int woodNeeded = requiredWood-obtainedWood;
+    	int goldNeeded = requiredGold-obtainedGold;
+    	
+    	if(worker.hasLoad) {
+    		if(worker.loadType.equals(ResourceType.GOLD)) {
+        		if(nextToTownhall(worker)) {
+        			workerValue+=(closestMineDistance*2);
+        		} else {
+        			workerValue+=(closestMineDistance+1);
+        		}
+        	} else if(worker.loadType.equals(ResourceType.WOOD)) {
+           		if(nextToTownhall(worker)) {
+        			workerValue+=(closestTreeDistance*2);
+        		} else {
+        			workerValue+=(closestTreeDistance+1);
+        		}
+        	}
+    	} else {
+    		if(goldNeeded>0 && nextToResource(worker, ResourceNode.Type.GOLD_MINE)) {
+    			workerValue+=closestMineDistance;
+    		} else if(woodNeeded>0 && nextToResource(worker, ResourceNode.Type.TREE)) {
+    			workerValue+=closestTreeDistance;
+    		}
+    	}
+    	
+    	return workerValue;
+    }
+    
+    // Refactor if there is time, so it isn't a double loop
+    private boolean nextToResource(WorkerWrapper worker, ResourceNode.Type resourceType) {
+    	for(Position p : worker.position.getAdjacentPositions()) {
+    		for(ResourceNodeWrapper resource : resources.values()) {
+    			if(resource.type.equals(resourceType) && resource.position.equals(p)) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    
+    private boolean nextToTownhall(WorkerWrapper worker) {
+    	for(Position p : worker.position.getAdjacentPositions()) {
+    		if(p.equals(townhallLocation)) 
+    			return true;
+    	}
+    	return false;
     }
 
     /**
