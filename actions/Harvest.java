@@ -49,7 +49,7 @@ public class Harvest implements StripsAction {
 		}
 	
 		// Remove the resources from the new state, then take it out of the priority queue if it is empty
-		newState.resources.get(resourceNode.id).remainingResources-=100;
+		newState.resources.get(resourceNode.id).removeResources(100);
 		if(newState.closestTree.peek().remainingResources<=0) {
 			newState.closestTree.remove();
 		}

@@ -112,13 +112,13 @@ public class GameState implements Comparable<GameState> {
         	workers.put(worker.id, new WorkerWrapper(worker));
         }
         for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
-        	resources.put(resource.id, new ResourceNodeWrapper(resource));
-        }
-        for(ResourceNodeWrapper tree : stateToCopy.closestTree) {
-        	closestTree.add(new ResourceNodeWrapper(tree));
-        }
-        for(ResourceNodeWrapper mine : stateToCopy.closestGoldMine) {
-        	closestGoldMine.add(new ResourceNodeWrapper(mine));
+        	ResourceNodeWrapper resourceCopy = new ResourceNodeWrapper(resource);
+        	resources.put(resource.id, resourceCopy);
+        	if(resourceCopy.type.equals(ResourceNode.Type.GOLD_MINE) && resourceCopy.remainingResources>0) {
+        		closestGoldMine.add(resourceCopy);
+        	} else if (resourceCopy.type.equals(ResourceNode.Type.TREE) && resourceCopy.remainingResources>0) {
+        		closestTree.add(resourceCopy);
+        	}
         }
         this.requiredGold = stateToCopy.requiredGold;
         this.requiredWood = stateToCopy.requiredWood;
@@ -402,6 +402,10 @@ public class GameState implements Comparable<GameState> {
     		type = resourceToCopy.type;
     		remainingResources = resourceToCopy.remainingResources;
     		id = resourceToCopy.id;
+    	}
+    	
+    	public void removeResources(int amount) {
+    		remainingResources = remainingResources-amount;
     	}
     	
 		@Override
