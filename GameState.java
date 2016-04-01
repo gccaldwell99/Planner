@@ -200,7 +200,7 @@ public class GameState implements Comparable<GameState> {
     	for(ResourceNodeWrapper resource : resources.values()) {
     		if(resource.type.equals(ResourceNode.Type.GOLD_MINE)) {
     			closestMineDistance = Math.min(closestMineDistance, resource.position.euclideanDistance(townhallLocation));
-    		} else if(resource.type.equals(ResourceNode.Type.GOLD_MINE)) {
+    		} else if(resource.type.equals(ResourceNode.Type.TREE)) {
     			closestTreeDistance = Math.min(closestTreeDistance, resource.position.euclideanDistance(townhallLocation));
     		}
     	}
