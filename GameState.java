@@ -62,6 +62,8 @@ public class GameState implements Comparable<GameState> {
     	workers = new HashMap<Integer,WorkerWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
     	actions = new Stack<StripsAction>();
+    	closestGoldMine = new PriorityQueue<ResourceNodeWrapper>();
+    	closestTree = new PriorityQueue<ResourceNodeWrapper>();
     	
     	
         for(UnitView unit : state.getUnits(playernum)) {
@@ -72,6 +74,7 @@ public class GameState implements Comparable<GameState> {
         		townhallID = unit.getID();
         	}
         }
+        
         for(ResourceNode.ResourceView resource : state.getAllResourceNodes()) {
         	resources.put(resource.getID(), new ResourceNodeWrapper(resource));
         	
@@ -95,9 +98,15 @@ public class GameState implements Comparable<GameState> {
     	xExtent = stateToCopy.xExtent;
     	yExtent = stateToCopy.yExtent;
     	
+    	// Must go before resource queues
+        townhallLocation = stateToCopy.townhallLocation;
+        townhallID = stateToCopy.townhallID;
+    	
     	workers = new HashMap<Integer,WorkerWrapper>();
     	resources = new HashMap<Integer, ResourceNodeWrapper>();
     	actions = new Stack<StripsAction>();
+    	closestGoldMine = new PriorityQueue<ResourceNodeWrapper>();
+    	closestTree = new PriorityQueue<ResourceNodeWrapper>();
     	
     	for(WorkerWrapper worker : stateToCopy.workers.values()) {
         	workers.put(worker.id, new WorkerWrapper(worker));
@@ -117,9 +126,6 @@ public class GameState implements Comparable<GameState> {
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
         
-        townhallLocation = stateToCopy.townhallLocation;
-        townhallID = stateToCopy.townhallID;
-        
         for(StripsAction action : stateToCopy.actions) {
         	actions.push(action);
         }
@@ -133,7 +139,7 @@ public class GameState implements Comparable<GameState> {
      * @return true if the goal conditions are met in this instance of game state.
      */
     public boolean isGoal() {
-        if(requiredGold == obtainedGold && requiredWood == obtainedWood) {
+        if(requiredGold <= obtainedGold && requiredWood <= obtainedWood) {
         	return true;
         } else {
         	return false;
@@ -167,7 +173,7 @@ public class GameState implements Comparable<GameState> {
     		if(harvestGold.preconditionsMet(this))
     			children.add(harvestGold.apply(this));
     		
-    		Harvest harvestWood = new Harvest(closestGoldMine.peek(), worker);
+    		Harvest harvestWood = new Harvest(closestTree.peek(), worker);
     		if(harvestWood.preconditionsMet(this))
     			children.add(harvestWood.apply(this));
     		
@@ -217,13 +223,13 @@ public class GameState implements Comparable<GameState> {
     	int goldNeeded = requiredGold-obtainedGold;
     	
     	if(worker.hasLoad) {
-    		if(worker.loadType.equals(ResourceType.GOLD)) {
+    		if(goldNeeded>0 && worker.loadType.equals(ResourceType.GOLD)) {
         		if(nextToTownhall(worker)) {
         			workerValue+=(closestMineDistance*2);
         		} else {
         			workerValue+=(closestMineDistance+1);
         		}
-        	} else if(worker.loadType.equals(ResourceType.WOOD)) {
+        	} else if(woodNeeded>0 && worker.loadType.equals(ResourceType.WOOD)) {
            		if(nextToTownhall(worker)) {
         			workerValue+=(closestTreeDistance*2);
         		} else {
