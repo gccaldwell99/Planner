@@ -106,7 +106,6 @@ public class PEAgent extends Agent {
 			return actions;
 		}
 		
-    	System.out.println(this.plan.size());
     	StripsAction nextStrip = this.plan.pop();
     	Action nextAction = nextStrip.getSepiaAction();
     	Integer peasantID = nextAction.getUnitId();
