@@ -92,8 +92,16 @@ public class PEAgent extends Agent {
      */
     @Override
     public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
-        // TODO: Implement me, Andrew!
-        return null;
+    	// TODO: What if there are multiple peasants?
+    	Map<Integer, Action> actions = new HashMap<Integer, Action>();
+
+    	StripsAction nextStrip = this.plan.pop();
+    	Action nextAction = nextStrip.getSepiaAction();
+    	Integer peasantID = nextAction.getUnitId();
+
+    	actions.put(peasantID, nextAction);
+
+    	return actions;
     }
 
     /**
