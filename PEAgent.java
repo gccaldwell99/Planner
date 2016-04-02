@@ -1,6 +1,8 @@
 package edu.cwru.sepia.agent.planner;
 
 import edu.cwru.sepia.action.Action;
+import edu.cwru.sepia.action.ActionFeedback;
+import edu.cwru.sepia.action.ActionResult;
 import edu.cwru.sepia.agent.Agent;
 import edu.cwru.sepia.agent.planner.actions.*;
 import edu.cwru.sepia.environment.model.history.History;
@@ -94,7 +96,17 @@ public class PEAgent extends Agent {
     public Map<Integer, Action> middleStep(State.StateView stateView, History.HistoryView historyView) {
     	// TODO: What if there are multiple peasants?
     	Map<Integer, Action> actions = new HashMap<Integer, Action>();
-
+    
+    	if (stateView.getTurnNumber() == 0) {
+    		return actions;
+    	}
+		
+		boolean completed = actionsCompleted(stateView, historyView);
+		if (!completed) {
+			return actions;
+		}
+		
+    	System.out.println(this.plan.size());
     	StripsAction nextStrip = this.plan.pop();
     	Action nextAction = nextStrip.getSepiaAction();
     	Integer peasantID = nextAction.getUnitId();
@@ -102,6 +114,16 @@ public class PEAgent extends Agent {
     	actions.put(peasantID, nextAction);
 
     	return actions;
+    }
+    
+    // Returns if there are any ongoing actions
+    private boolean actionsCompleted(State.StateView stateView, History.HistoryView historyView) {
+    	boolean complete = true;
+		Map<Integer, ActionResult> actionResults = historyView.getCommandFeedback(playernum, stateView.getTurnNumber() - 1);
+		for (ActionResult result : actionResults.values()) {
+			complete = complete && result.getFeedback() == ActionFeedback.COMPLETED;
+		}
+		return complete;
     }
 
     /**
