@@ -42,6 +42,7 @@ public class GameState implements Comparable<GameState> {
 	public int requiredWood;
 	public int obtainedGold;
 	public int obtainedWood;
+	public int foodAmount;
 	public Position townhallLocation;
 	public int townhallID;
 	
@@ -89,6 +90,7 @@ public class GameState implements Comparable<GameState> {
         
         obtainedGold = state.getResourceAmount(playernum, ResourceType.GOLD);
         obtainedWood = state.getResourceAmount(playernum, ResourceType.WOOD);
+        foodAmount = state.getSupplyAmount(townhallID);
     }
     
     /**
@@ -125,6 +127,7 @@ public class GameState implements Comparable<GameState> {
         
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
+        foodAmount = stateToCopy.foodAmount;
         
         for(StripsAction action : stateToCopy.actions) {
         	actions.push(action);
@@ -307,6 +310,7 @@ public class GameState implements Comparable<GameState> {
         GameState otherState = (GameState) o;
         return otherState.obtainedGold == obtainedGold 
         		&& otherState.obtainedWood == obtainedWood 
+        		&& otherState.foodAmount == foodAmount
         		&& otherState.workers.equals(workers)
         		&& otherState.resources.equals(resources);
     }
@@ -322,6 +326,7 @@ public class GameState implements Comparable<GameState> {
         int hash = obtainedGold*31 + obtainedWood;
         hash = hash*31+workers.hashCode();
         hash = hash*31+resources.hashCode();
+        hash = hash*31+foodAmount;
         return hash;
     }
     
