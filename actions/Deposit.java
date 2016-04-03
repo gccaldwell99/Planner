@@ -59,7 +59,7 @@ public class Deposit implements StripsAction {
 			// if any of the workers don't have a load then you shouldn't use them
 			if (!worker.hasLoad)
 				continue;
-			// Check to see if all workers are next to the town hall your trying to deposit to
+			// Check to see if all workers are next to the town hall you're trying to deposit to
 			if (worker.position.equals(this.townhallLocation))
 				validNeighbors.add(worker);
 		}
