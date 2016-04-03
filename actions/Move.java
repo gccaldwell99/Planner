@@ -24,8 +24,10 @@ public class Move implements StripsAction {
 		List<WorkerWrapper> kWorkers = new ArrayList<WorkerWrapper>();
 		int count = 0;
 		for (WorkerWrapper worker : workers.values()) {
-			count++;
-			kWorkers.add(worker);
+			if (worker.position != this.destination) {
+				count++;
+				kWorkers.add(worker);	
+			}
 			if (count > this.k) 
 				break;
 		}
@@ -34,9 +36,10 @@ public class Move implements StripsAction {
 	
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		if(!destination.inBounds(state.xExtent, state.yExtent)) {
+		if(!destination.inBounds(state.xExtent, state.yExtent))
 			return false;
-		}
+		if (this.kWorkers.size() < k)
+			return false;
 		return true;
 	}
 
