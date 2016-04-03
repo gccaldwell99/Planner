@@ -9,12 +9,11 @@ import edu.cwru.sepia.environment.model.state.ResourceType;
 
 public class Deposit implements StripsAction {
 	private List<WorkerWrapper> workers;
-	private int townhallID, k;
+	private int townhallID;
 	
-	public Deposit(int k, List<WorkerWrapper> workers, int townhallID) {
+	public Deposit(List<WorkerWrapper> workers, int townhallID) {
 		this.workers = workers;
 		this.townhallID = townhallID;
-		this.k = k;
 	}
 
 	@Override
