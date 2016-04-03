@@ -28,8 +28,8 @@ public class PlannerAgent extends Agent {
             System.err.println("You must specify the required wood and gold amounts and whether peasants should be built");
         }
 
-        requiredWood = Integer.parseInt(params[0]);
-        requiredGold = Integer.parseInt(params[1]);
+        requiredWood = Integer.parseInt(params[1]);
+        requiredGold = Integer.parseInt(params[0]);
         buildPeasants = Boolean.parseBoolean(params[2]);
 
 
