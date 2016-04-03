@@ -38,6 +38,7 @@ public class GameState implements Comparable<GameState> {
 	public Stack<StripsAction> actions;
 	public int xExtent;
 	public int yExtent;
+	public boolean buildPeasants;
 	public int requiredGold;
 	public int requiredWood;
 	public int obtainedGold;
@@ -92,6 +93,7 @@ public class GameState implements Comparable<GameState> {
         }
         this.requiredGold = requiredGold;
         this.requiredWood = requiredWood;
+        this.buildPeasants = buildPeasants;
         
         obtainedGold = state.getResourceAmount(playernum, ResourceType.GOLD);
         obtainedWood = state.getResourceAmount(playernum, ResourceType.WOOD);
@@ -135,6 +137,7 @@ public class GameState implements Comparable<GameState> {
         }
         this.requiredGold = stateToCopy.requiredGold;
         this.requiredWood = stateToCopy.requiredWood;
+        this.buildPeasants = stateToCopy.buildPeasants;
         
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
@@ -194,6 +197,12 @@ public class GameState implements Comparable<GameState> {
     		Deposit deposit = new Deposit(worker, townhallID);
     		if(deposit.preconditionsMet(this))
     			children.add(deposit.apply(this));
+    		
+    		if(this.buildPeasants) {
+	    		BuildPeasant buildPeasant = new BuildPeasant(townhallID);
+	    		if(buildPeasant.preconditionsMet(this))
+	    			children.add(buildPeasant.apply(this));
+    		}
     	}
     	
         return children;
