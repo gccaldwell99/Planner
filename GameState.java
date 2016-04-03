@@ -237,6 +237,9 @@ public class GameState implements Comparable<GameState> {
     		heuristicCost-=calculateWorkerValue(worker, closestTreeDistance, closestMineDistance);
     	}
         
+    	if(workers.size()>0)
+    		heuristicCost = heuristicCost/workers.size();
+    	
         return heuristicCost;
     }
     
