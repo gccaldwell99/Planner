@@ -27,15 +27,16 @@ public class BuildPeasant implements StripsAction {
 		// Creates a immutable copy of the state
 		GameState newState = new GameState(state);
 		
+		newState.obtainedGold-=400;
+		newState.foodAmount-=1;
+		newState.highestID+=1;	
+		
 		// make peasant representation in state
 		Position townhallLocation = newState.townhallLocation;
 		int newID = newState.highestID;
 		WorkerWrapper newWorker = newState.new WorkerWrapper(townhallLocation, newID);
 		
 		newState.workers.put(newWorker.id, newWorker);
-		newState.obtainedGold-=400;
-		newState.foodAmount-=1;
-		newState.highestID+=1;	
 		
 		newState.actions.push(this);
 		return newState;
