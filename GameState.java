@@ -365,6 +365,18 @@ public class GameState implements Comparable<GameState> {
     	}
     	
     	/**
+    	 * Used to create new workers without a UnitView or duplicate.
+    	 * @param position the position of the new worker
+    	 * @param id the id of the new worker
+    	 */
+    	public WorkerWrapper(Position position, int id) {
+    		this.position = position;
+    		this.id = id;
+    		this.hasLoad = false;
+    		this.loadType = null;
+    	}
+    	
+    	/**
     	 * Acts as a cloning constructor to create an immutable copy of the given worker
     	 * @param workerToClone
     	 */
