@@ -45,6 +45,7 @@ public class GameState implements Comparable<GameState> {
 	public int foodAmount;
 	public Position townhallLocation;
 	public int townhallID;
+	public int highestID;
 	
     /**
      * Construct a GameState from a stateview object. This is used to construct the initial search node. All other
@@ -66,13 +67,17 @@ public class GameState implements Comparable<GameState> {
     	closestGoldMine = new PriorityQueue<ResourceNodeWrapper>();
     	closestTree = new PriorityQueue<ResourceNodeWrapper>();
     	
-    	
+    	this.highestID = -1;
         for(UnitView unit : state.getUnits(playernum)) {
         	if(unit.getTemplateView().getName().equals("Peasant"))
         		workers.put(unit.getID(), new WorkerWrapper(unit));
         	if(unit.getTemplateView().getName().equals("TownHall")) {
         		townhallLocation = new Position(unit.getXPosition(), unit.getYPosition());
         		townhallID = unit.getID();
+        	}
+        	int currentID = unit.getID();
+        	if (currentID > this.highestID) {
+        		this.highestID = currentID;
         	}
         }
         
@@ -110,8 +115,14 @@ public class GameState implements Comparable<GameState> {
     	closestGoldMine = new PriorityQueue<ResourceNodeWrapper>();
     	closestTree = new PriorityQueue<ResourceNodeWrapper>();
     	
+    	// Start with the only ID we know at this point
+    	this.highestID = townhallID;
     	for(WorkerWrapper worker : stateToCopy.workers.values()) {
         	workers.put(worker.id, new WorkerWrapper(worker));
+        	// keep track of the highest id we have seen
+        	if (worker.id > this.highestID) {
+        		this.highestID = worker.id;
+        	}
         }
         for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
         	ResourceNodeWrapper resourceCopy = new ResourceNodeWrapper(resource);
