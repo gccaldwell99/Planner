@@ -90,6 +90,9 @@ public class GameState implements Comparable<GameState> {
         	} else if(resource.getType().equals(ResourceNode.Type.TREE)) {
         		closestTree.add(new ResourceNodeWrapper(resource));
         	}
+        	if (resource.getID() > this.highestID) {
+        		this.highestID = resource.getID();
+        	}
         }
         this.requiredGold = requiredGold;
         this.requiredWood = requiredWood;
@@ -118,13 +121,8 @@ public class GameState implements Comparable<GameState> {
     	closestTree = new PriorityQueue<ResourceNodeWrapper>();
     	
     	// Start with the only ID we know at this point
-    	this.highestID = townhallID;
     	for(WorkerWrapper worker : stateToCopy.workers.values()) {
         	workers.put(worker.id, new WorkerWrapper(worker));
-        	// keep track of the highest id we have seen
-        	if (worker.id > this.highestID) {
-        		this.highestID = worker.id;
-        	}
         }
         for(ResourceNodeWrapper resource : stateToCopy.resources.values()) {
         	ResourceNodeWrapper resourceCopy = new ResourceNodeWrapper(resource);
@@ -138,6 +136,7 @@ public class GameState implements Comparable<GameState> {
         this.requiredGold = stateToCopy.requiredGold;
         this.requiredWood = stateToCopy.requiredWood;
         this.buildPeasants = stateToCopy.buildPeasants;
+        this.highestID = stateToCopy.highestID;
         
         obtainedGold = stateToCopy.obtainedGold;
         obtainedWood = stateToCopy.obtainedWood;
