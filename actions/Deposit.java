@@ -15,7 +15,7 @@ public class Deposit implements StripsAction {
 	private int townhallID, k;
 	private Position townhallLocation;
 	
-	public Deposit(HashMap<Integer, WorkerWrapper> workers, int k, int townhallID, Position townhallLocation) {
+	public Deposit(int k, HashMap<Integer, WorkerWrapper> workers, int townhallID, Position townhallLocation) {
 		this.validWorkers = getValidWorkers(workers);
 		this.townhallID = townhallID;
 		this.townhallLocation = townhallLocation;
