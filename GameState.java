@@ -1,5 +1,6 @@
 package edu.cwru.sepia.agent.planner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,39 +171,41 @@ public class GameState implements Comparable<GameState> {
      */
     public List<GameState> generateChildren() {
     	List<GameState> children = new LinkedList<GameState>();
+    	// list of gamestate with those things applied
+    	// so can't have sequence of actions because we would need to apply them
     	
-    	for(WorkerWrapper worker : workers.values()) {
-    		Move moveToMine = new Move(closestGoldMine.peek().position, worker);
-    		if(moveToMine.preconditionsMet(this))
-				children.add(moveToMine.apply(this));
+    	for(int i = 0; i < workers.size() ; i++) {
+    		Deposit deposit = new Deposit(i, workers, townhallID, townhallLocation);
+    		if (deposit.preconditionsMet(this)) 
+    			children.add(deposit.apply(this));
     		
-    		Move moveToTree = new Move(closestTree.peek().position, worker);
+    		Move moveToMine = new Move(i, workers, closestGoldMine.peek().position);
+    		if(moveToMine.preconditionsMet(this))
+    			children.add(moveToMine.apply(this));
+    		
+    		Move moveToTree = new Move(i, workers, closestTree.peek().position);
     		if(moveToTree.preconditionsMet(this))
 				children.add(moveToTree.apply(this));
-
-    		Move moveToTownHall = new Move(townhallLocation, worker);
+    				
+    		Move moveToTownHall = new Move(i, workers, townhallLocation);
     		if(moveToTownHall.preconditionsMet(this))
 				children.add(moveToTownHall.apply(this));
     		
-    		// Have to deal with multiple workers harvesting from an almost empty resource
-    		Harvest harvestGold = new Harvest(closestGoldMine.peek(), worker);
+    		// if there is not enough gold at that gold mine then precondition not met
+    		Harvest harvestGold = new Harvest(i, workers, closestGoldMine.peek());
     		if(harvestGold.preconditionsMet(this))
     			children.add(harvestGold.apply(this));
     		
-    		Harvest harvestWood = new Harvest(closestTree.peek(), worker);
+    		Harvest harvestWood = new Harvest(i, workers, closestTree.peek());
     		if(harvestWood.preconditionsMet(this))
     			children.add(harvestWood.apply(this));
-    		
-    		Deposit deposit = new Deposit(worker, townhallID);
-    		if(deposit.preconditionsMet(this))
-    			children.add(deposit.apply(this));
-    		
-    		if(this.buildPeasants) {
-	    		BuildPeasant buildPeasant = new BuildPeasant(townhallID);
-	    		if(buildPeasant.preconditionsMet(this))
-	    			children.add(buildPeasant.apply(this));
-    		}
     	}
+    	
+    	if(this.buildPeasants) {
+    		BuildPeasant buildPeasant = new BuildPeasant(townhallID);
+    		if(buildPeasant.preconditionsMet(this))
+    			children.add(buildPeasant.apply(this));
+		}
     	
         return children;
     }
