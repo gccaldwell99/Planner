@@ -1,26 +1,34 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import java.util.List;
+
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
 import edu.cwru.sepia.environment.model.state.ResourceType;
 
 public class Deposit implements StripsAction {
-	private WorkerWrapper worker;
-	private int townhallID;
+	private List<WorkerWrapper> workers;
+	private int townhallID, k;
 	
-	public Deposit(WorkerWrapper worker, int townhallID) {
-		this.worker = worker;
+	public Deposit(int k, List<WorkerWrapper> workers, int townhallID) {
+		this.workers = workers;
 		this.townhallID = townhallID;
+		this.k = k;
 	}
 
 	@Override
 	public boolean preconditionsMet(GameState state) {
-		if(!worker.hasLoad)
-			return false;
+		boolean nextTo = true;
+		for (WorkerWrapper worker : workers) {
+			// if any of the workers don't have a load then you shouldn't use this
+			if (!worker.hasLoad)
+				return false;
+			// Check to see if all workers are next to the town hall your trying to deposit to
+			nextTo = nextTo && worker.position.equals(state.townhallLocation);
+		}
 		
-		// Check to see if your next to the townhall your trying to deposit to
-		return worker.position.equals(state.townhallLocation);
+		return nextTo;
 	}
 
 	@Override
