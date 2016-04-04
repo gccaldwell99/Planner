@@ -107,10 +107,12 @@ public class PEAgent extends Agent {
 		}
 		
     	StripsAction nextStrip = this.plan.pop();
-    	Action nextAction = nextStrip.getSepiaAction();
-    	Integer peasantID = nextAction.getUnitId();
-
-    	actions.put(peasantID, nextAction);
+    	for (int i=0; i<nextStrip.getNumActions(); i++) {
+	    	Action nextAction = nextStrip.getSepiaAction();
+	    	Integer peasantID = nextAction.getUnitId();
+	
+	    	actions.put(peasantID, nextAction);
+    	}
 
     	return actions;
     }
