@@ -16,10 +16,10 @@ public class Deposit implements StripsAction {
 	private Position townhallLocation;
 	
 	public Deposit(int k, HashMap<Integer, WorkerWrapper> workers, int townhallID, Position townhallLocation) {
-		this.validWorkers = getValidWorkers(workers);
 		this.townhallID = townhallID;
 		this.townhallLocation = townhallLocation;
 		this.k = k;
+		this.validWorkers = getValidWorkers(workers);
 	}
 
 	@Override
