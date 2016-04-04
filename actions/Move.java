@@ -16,8 +16,8 @@ public class Move implements StripsAction {
 	
 	public Move(int k, HashMap<Integer, WorkerWrapper> workers, Position destination) {
 		this.k = k;
-		this.kWorkers = getKWorkers(workers);
 		this.destination = destination;
+		this.kWorkers = getKWorkers(workers);
 	}
 	
 	private List<WorkerWrapper> getKWorkers(HashMap<Integer, WorkerWrapper> workers) {
