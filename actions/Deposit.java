@@ -42,9 +42,9 @@ public class Deposit implements StripsAction {
 			harvestingWorker.hasLoad = false;
 			harvestingWorker.loadType = null;
 			
-			if(harvestingWorker.loadType.equals(ResourceType.GOLD)) {
+			if(worker.loadType.equals(ResourceType.GOLD)) {
 				newState.obtainedGold+=100;
-			} else if(harvestingWorker.loadType.equals(ResourceType.WOOD)) {
+			} else if(worker.loadType.equals(ResourceType.WOOD)) {
 				newState.obtainedWood+=100;
 			}
 		}
