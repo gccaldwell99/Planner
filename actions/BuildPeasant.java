@@ -1,5 +1,8 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
 import edu.cwru.sepia.agent.planner.GameState.WorkerWrapper;
@@ -20,6 +23,16 @@ public class BuildPeasant implements StripsAction {
 			return false;
 		}
 		return true;
+	}
+	
+	public int getNumActions() {
+		return 1;
+	}
+	
+	public List<Integer> getActorIds() {
+		List<Integer> ids = new ArrayList<Integer>();
+		ids.add(this.townhallID);
+		return ids;
 	}
 
 	@Override

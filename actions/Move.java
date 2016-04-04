@@ -20,6 +20,18 @@ public class Move implements StripsAction {
 		this.kWorkers = getKWorkers(workers);
 	}
 	
+	public int getNumActions() {
+		return this.k;
+	}
+	
+	public List<Integer> getActorIds() {
+		List<Integer> ids = new ArrayList<Integer>();
+		for (WorkerWrapper worker : this.kWorkers) {
+			ids.add(worker.id);
+		}
+		return ids;
+	}
+	
 	private List<WorkerWrapper> getKWorkers(HashMap<Integer, WorkerWrapper> workers) {
 		List<WorkerWrapper> kWorkers = new ArrayList<WorkerWrapper>();
 		int count = 0;
@@ -28,7 +40,7 @@ public class Move implements StripsAction {
 				count++;
 				kWorkers.add(worker);	
 			}
-			if (count > this.k) 
+			if (count >= this.k) 
 				break;
 		}
 		return kWorkers;

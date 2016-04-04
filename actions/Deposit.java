@@ -21,6 +21,10 @@ public class Deposit implements StripsAction {
 		this.k = k;
 		this.validWorkers = getValidWorkers(workers);
 	}
+	
+	public int getNumActions() {
+		return this.k;
+	}
 
 	@Override
 	public boolean preconditionsMet(GameState state) {		
@@ -51,6 +55,16 @@ public class Deposit implements StripsAction {
 		
 		newState.actions.push(this);
 		return newState;
+	}
+	
+	public List<Integer> getActorIds() {
+		List<Integer> ids = new ArrayList<Integer>();
+		for (WorkerWrapper worker : this.validWorkers) {
+			ids.add(worker.id);
+		}
+		// I don't think you need the town hall since it is not acting
+		// ids.add(this.townhallID);
+		return ids;
 	}
 	
 	private List<WorkerWrapper> getValidWorkers(HashMap<Integer, WorkerWrapper> workers) {
