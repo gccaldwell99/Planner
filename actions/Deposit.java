@@ -62,7 +62,8 @@ public class Deposit implements StripsAction {
 		for (WorkerWrapper worker : this.validWorkers) {
 			ids.add(worker.id);
 		}
-		ids.add(this.townhallID);
+		// I don't think you need the town hall since it is not acting
+		// ids.add(this.townhallID);
 		return ids;
 	}
 	

@@ -32,7 +32,8 @@ public class Harvest implements StripsAction {
 		for (WorkerWrapper worker : this.validWorkers) {
 			ids.add(worker.id);
 		}
-		ids.add(this.resourceNode.id);
+		// I dont think you need to add the resource node since it is not acting
+//		ids.add(this.resourceNode.id);
 		return ids;
 	}
 	
