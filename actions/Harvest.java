@@ -1,6 +1,7 @@
 package edu.cwru.sepia.agent.planner.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,22 +44,35 @@ public class Harvest implements StripsAction {
 	public boolean preconditionsMet(GameState state) {
 		if(resourceNode.remainingResources< this.k*100)
 			return false;
-
+		
 		int requiredAmount = -1;
 		int obtainedAmount = 0;
+		int potentialAmount = 0;
 		if(resourceNode.type.equals(ResourceNode.Type.GOLD_MINE)) {
 			requiredAmount = state.requiredGold;
 			obtainedAmount = state.obtainedGold;
+			potentialAmount = getPotentialAmount(state.workers.values(), ResourceType.GOLD);
 		} else if(resourceNode.type.equals(ResourceNode.Type.TREE)) {
 			requiredAmount = state.requiredWood;
 			obtainedAmount = state.obtainedWood;
+			potentialAmount = getPotentialAmount(state.workers.values(), ResourceType.WOOD);
 		}
 		// if harvesting this exceeds the required amount don't do it
-		if (this.k*100 + obtainedAmount  > requiredAmount) {
+		if (this.k*100 + obtainedAmount + potentialAmount  > requiredAmount) {
 			return false;
 		}
 				
 		return this.validWorkers.size() >= this.k;	
+	}
+	
+	private int getPotentialAmount(Collection<WorkerWrapper> workers, ResourceType type) {
+		int potentialAmount = 0;
+		for (WorkerWrapper worker : workers) {
+			if (worker.hasLoad && worker.loadType.equals(type)) {
+				potentialAmount += 100;
+			}
+		}
+		return potentialAmount;
 	}
 
 	/**
