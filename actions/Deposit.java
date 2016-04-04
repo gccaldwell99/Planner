@@ -21,6 +21,10 @@ public class Deposit implements StripsAction {
 		this.k = k;
 		this.validWorkers = getValidWorkers(workers);
 	}
+	
+	public int getNumActions() {
+		return this.k;
+	}
 
 	@Override
 	public boolean preconditionsMet(GameState state) {		

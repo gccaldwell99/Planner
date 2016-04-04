@@ -21,6 +21,10 @@ public class BuildPeasant implements StripsAction {
 		}
 		return true;
 	}
+	
+	public int getNumActions() {
+		return 1;
+	}
 
 	@Override
 	public GameState apply(GameState state) {

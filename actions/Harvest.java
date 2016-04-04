@@ -22,6 +22,10 @@ public class Harvest implements StripsAction {
 		this.validWorkers = getValidWorkers(workers);
 	}
 	
+	public int getNumActions() {
+		return this.k;
+	}
+	
 	private List<WorkerWrapper> getValidWorkers(HashMap<Integer, WorkerWrapper> workers) {
 		List<WorkerWrapper> validNeighbors = new ArrayList<WorkerWrapper>();
 		for (WorkerWrapper worker : workers.values()) {
