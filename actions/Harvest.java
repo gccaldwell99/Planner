@@ -43,6 +43,20 @@ public class Harvest implements StripsAction {
 	public boolean preconditionsMet(GameState state) {
 		if(resourceNode.remainingResources< this.k*100)
 			return false;
+
+		int requiredAmount = -1;
+		int obtainedAmount = 0;
+		if(resourceNode.type.equals(ResourceNode.Type.GOLD_MINE)) {
+			requiredAmount = state.requiredGold;
+			obtainedAmount = state.obtainedGold;
+		} else if(resourceNode.type.equals(ResourceNode.Type.TREE)) {
+			requiredAmount = state.requiredWood;
+			obtainedAmount = state.obtainedWood;
+		}
+		// if harvesting this exceeds the required amount don't do it
+		if (this.k*100 + obtainedAmount  > requiredAmount) {
+			return false;
+		}
 				
 		return this.validWorkers.size() >= this.k;	
 	}
@@ -51,6 +65,7 @@ public class Harvest implements StripsAction {
 	 * This is currently horrible abuse of mutability. 
 	 */
 	@Override
+	// TODO: harvest the gold
 	public GameState apply(GameState state) {
 		GameState newState = new GameState(state);
 		// shorten the valid workers to the size of k
