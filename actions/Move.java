@@ -24,7 +24,7 @@ public class Move implements StripsAction {
 		List<WorkerWrapper> kWorkers = new ArrayList<WorkerWrapper>();
 		int count = 0;
 		for (WorkerWrapper worker : workers.values()) {
-			if (worker.position != this.destination) {
+			if (!worker.position.equals(this.destination)) {
 				count++;
 				kWorkers.add(worker);	
 			}
