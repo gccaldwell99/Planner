@@ -24,6 +24,14 @@ public class Move implements StripsAction {
 		return this.k;
 	}
 	
+	public List<Integer> getActorIds() {
+		List<Integer> ids = new ArrayList<Integer>();
+		for (WorkerWrapper worker : this.kWorkers) {
+			ids.add(worker.id);
+		}
+		return ids;
+	}
+	
 	private List<WorkerWrapper> getKWorkers(HashMap<Integer, WorkerWrapper> workers) {
 		List<WorkerWrapper> kWorkers = new ArrayList<WorkerWrapper>();
 		int count = 0;

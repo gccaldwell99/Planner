@@ -14,6 +14,7 @@ import edu.cwru.sepia.environment.model.state.Unit;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -101,11 +102,12 @@ public class PEAgent extends Agent {
     		return actions;
     	}
 		
-		boolean completed = actionsCompleted(stateView, historyView);
+    	System.out.println(this.plan.peek());
+		boolean completed = canExecute(this.plan.peek().getActorIds(), stateView, historyView);
 		if (!completed) {
 			return actions;
 		}
-		
+
     	StripsAction nextStrip = this.plan.pop();
     	for (int i=0; i<nextStrip.getNumActions(); i++) {
 	    	Action nextAction = nextStrip.getSepiaAction();
@@ -118,13 +120,17 @@ public class PEAgent extends Agent {
     }
     
     // Returns if there are any ongoing actions
-    private boolean actionsCompleted(State.StateView stateView, History.HistoryView historyView) {
+    private boolean canExecute(List<Integer> nextIds, State.StateView stateView, History.HistoryView historyView) {
     	boolean complete = true;
+    	boolean doesntEffect = true;
 		Map<Integer, ActionResult> actionResults = historyView.getCommandFeedback(playernum, stateView.getTurnNumber() - 1);
+		System.out.println(actionResults+" "+nextIds);
 		for (ActionResult result : actionResults.values()) {
 			complete = complete && result.getFeedback() == ActionFeedback.COMPLETED;
+			// see if the next id is used in an ongoing move
+			doesntEffect = doesntEffect && !nextIds.contains(result.getAction().getUnitId());
 		}
-		return complete;
+		return complete || doesntEffect;
     }
 
     /**

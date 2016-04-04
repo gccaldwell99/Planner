@@ -1,5 +1,7 @@
 package edu.cwru.sepia.agent.planner.actions;
 
+import java.util.List;
+
 import edu.cwru.sepia.action.Action;
 import edu.cwru.sepia.agent.planner.GameState;
 
@@ -16,6 +18,12 @@ public interface StripsAction {
 	 * @return the number of sepia actions needed
 	 */
 	public int getNumActions();
+	
+	/**
+	 * 
+	 * @return The id's that are used in the action
+	 */
+	public List<Integer> getActorIds();
 
     /**
      * Returns true if the provided GameState meets all of the necessary conditions for this action to successfully

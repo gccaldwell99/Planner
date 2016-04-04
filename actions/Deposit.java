@@ -57,6 +57,15 @@ public class Deposit implements StripsAction {
 		return newState;
 	}
 	
+	public List<Integer> getActorIds() {
+		List<Integer> ids = new ArrayList<Integer>();
+		for (WorkerWrapper worker : this.validWorkers) {
+			ids.add(worker.id);
+		}
+		ids.add(this.townhallID);
+		return ids;
+	}
+	
 	private List<WorkerWrapper> getValidWorkers(HashMap<Integer, WorkerWrapper> workers) {
 		List<WorkerWrapper> validNeighbors = new ArrayList<WorkerWrapper>();
 		for (WorkerWrapper worker : workers.values()) {
