@@ -46,6 +46,11 @@ public class BuildPeasant implements StripsAction {
 	public Action getSepiaAction() {
 		return Action.createPrimitiveProduction(this.townhallID, this.TEMPLATE_ID);
 	}
+	
+	@Override
+	public double cost() {
+		return 0;
+	}
 
 	@Override
 	public String toString() {

@@ -44,4 +44,10 @@ public interface StripsAction {
      * @return - returns sepia action corresponding to this strips action
      */
     public Action getSepiaAction();
+    
+    /**
+     * 
+     * @return - the cost of performing this action
+     */
+    public double cost();
 }

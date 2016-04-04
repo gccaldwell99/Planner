@@ -97,6 +97,8 @@ public class PlannerAgent extends Agent {
     	float startingValue = (float) (startState.getCost() + startState.heuristic());
     	frontier.add(startState, startingValue);
 
+    	double minHueristic = Double.MAX_VALUE;
+    	
     	GameState currentState;
     	do {
     		currentState = frontier.poll();

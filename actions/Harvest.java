@@ -91,6 +91,11 @@ public class Harvest implements StripsAction {
 		
 		return Action.createCompoundGather(selectedWorker.id, resourceNode.id);
 	}
+	
+	@Override
+	public double cost() {
+		return 1;
+	}
 
 	@Override
 	public String toString() {

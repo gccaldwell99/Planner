@@ -83,6 +83,11 @@ public class Deposit implements StripsAction {
 	}
 	
 	@Override
+	public double cost() {
+		return 1;
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Deposit ");

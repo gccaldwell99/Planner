@@ -72,6 +72,16 @@ public class Move implements StripsAction {
 		
 		return Action.createCompoundMove(selectedWorker.id, destination.x, destination.y);
 	}
+	
+	@Override
+	public double cost() {
+		double maxDistance = 0;
+		for(WorkerWrapper worker : kWorkers) {
+			double travelDistance = worker.position.chebyshevDistance(destination);
+			maxDistance = Math.max(maxDistance, travelDistance);
+		}
+		return maxDistance;
+	}
 
 	@Override
 	public String toString() {
