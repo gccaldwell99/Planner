@@ -102,7 +102,6 @@ public class PEAgent extends Agent {
     		return actions;
     	}
 		
-    	System.out.println(this.plan.peek());
 		boolean completed = canExecute(this.plan.peek().getActorIds(), stateView, historyView);
 		if (!completed) {
 			return actions;
@@ -124,7 +123,6 @@ public class PEAgent extends Agent {
     	boolean complete = true;
     	boolean doesntEffect = true;
 		Map<Integer, ActionResult> actionResults = historyView.getCommandFeedback(playernum, stateView.getTurnNumber() - 1);
-		System.out.println(actionResults+" "+nextIds);
 		for (ActionResult result : actionResults.values()) {
 			complete = complete && result.getFeedback() == ActionFeedback.COMPLETED;
 			// see if the next id is used in an ongoing move
