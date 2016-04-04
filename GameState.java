@@ -174,7 +174,7 @@ public class GameState implements Comparable<GameState> {
     	// list of gamestate with those things applied
     	// so can't have sequence of actions because we would need to apply them
     	
-    	for(int i = 0; i < workers.size() ; i++) {
+    	for(int i = 1; i <= workers.size() ; i++) {
     		Deposit deposit = new Deposit(i, workers, townhallID, townhallLocation);
     		if (deposit.preconditionsMet(this)) 
     			children.add(deposit.apply(this));
