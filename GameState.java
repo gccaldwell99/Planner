@@ -179,26 +179,34 @@ public class GameState implements Comparable<GameState> {
     		if (deposit.preconditionsMet(this)) 
     			children.add(deposit.apply(this));
     		
-    		Move moveToMine = new Move(i, workers, closestGoldMine.peek().position);
-    		if(moveToMine.preconditionsMet(this))
-    			children.add(moveToMine.apply(this));
+    		if(!closestGoldMine.isEmpty()) {
+    			Move moveToMine = new Move(i, workers, closestGoldMine.peek().position);
+    			if(moveToMine.preconditionsMet(this))
+    				children.add(moveToMine.apply(this));
+    		}
     		
-    		Move moveToTree = new Move(i, workers, closestTree.peek().position);
-    		if(moveToTree.preconditionsMet(this))
-				children.add(moveToTree.apply(this));
-    				
+    		if(!closestTree.isEmpty()) {
+    			Move moveToTree = new Move(i, workers, closestTree.peek().position);
+    			if(moveToTree.preconditionsMet(this))
+    				children.add(moveToTree.apply(this));
+    		}
+    		
     		Move moveToTownHall = new Move(i, workers, townhallLocation);
     		if(moveToTownHall.preconditionsMet(this))
 				children.add(moveToTownHall.apply(this));
     		
-    		// if there is not enough gold at that gold mine then precondition not met
-    		Harvest harvestGold = new Harvest(i, workers, closestGoldMine.peek());
-    		if(harvestGold.preconditionsMet(this))
-    			children.add(harvestGold.apply(this));
+    		if(!closestGoldMine.isEmpty()) {
+	    		// if there is not enough gold at that gold mine then precondition not met
+	    		Harvest harvestGold = new Harvest(i, workers, closestGoldMine.peek());
+	    		if(harvestGold.preconditionsMet(this))
+	    			children.add(harvestGold.apply(this));
+    		}
     		
-    		Harvest harvestWood = new Harvest(i, workers, closestTree.peek());
-    		if(harvestWood.preconditionsMet(this))
-    			children.add(harvestWood.apply(this));
+    		if(!closestTree.isEmpty()) {
+	    		Harvest harvestWood = new Harvest(i, workers, closestTree.peek());
+	    		if(harvestWood.preconditionsMet(this))
+	    			children.add(harvestWood.apply(this));
+    		}
     	}
     	
     	if(this.buildPeasants) {

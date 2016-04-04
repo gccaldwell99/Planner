@@ -107,10 +107,10 @@ public class Harvest implements StripsAction {
 			newState.resources.get(resourceNode.id).removeResources(100);
 		}
 		// If resource is now empty, take it out of the priority queue
-		if(newState.closestTree.peek().remainingResources<=0) {
+		if(!newState.closestTree.isEmpty() && newState.closestTree.peek().remainingResources<=0) {
 			newState.closestTree.remove();
 		}
-		if(newState.closestGoldMine.peek().remainingResources<=0) {
+		if(!newState.closestGoldMine.isEmpty() && newState.closestGoldMine.peek().remainingResources<=0) {
 			newState.closestGoldMine.remove();
 		}
 		
